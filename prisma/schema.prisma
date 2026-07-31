@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ResourceType: "BOOK" | "ARTICLE" | "DEVOTIONAL"
+// ResourceStatus: "DRAFT" | "PUBLISHED"
+// Visibility: "PUBLIC" | "PRIVATE"
+// CommentStatus: "PENDING" | "APPROVED" | "REJECTED"
+// (SQLite has no native enum support in Prisma; these are validated in app code — see src/lib/types.ts)
+
+model Admin {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+}
+
+model Resource {
+  id            String   @id @default(cuid())
+  type          String
+  title         String
+  slug          String   @unique
+  author        String   @default("Joel Kimari")
+  category      String   @default("Category")
+  excerpt       String
+  body          String
+  coverImageUrl String?
+  pdfUrl        String?
+  orderUrl      String?
+  tags          String   @default("")
+  status        String   @default("DRAFT")
+  visibility    String   @default("PUBLIC")
+  featured      Boolean  @default(false)
+  issueNumber   String?
+  accentColor   String?
+  views         Int      @default(0)
+  publishAt     DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  comments      Comment[]
+}
+
+model Comment {
+  id             String   @id @default(cuid())
+  resourceId     String
+  resource       Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  commenterName  String
+  commenterEmail String
+  body           String
+  reply          String?
+  status         String   @default("PENDING")
+  createdAt      DateTime @default(now())
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String
+  mimeType  String
+  width     Int?
+  height    Int?
+  sizeBytes Int
+  usedIn    String?
+  createdAt DateTime @default(now())
+}
+
+// InquiryType: "GENERAL" | "ORDER_BOOK"
+model ContactMessage {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  country     String?
+  inquiryType String   @default("GENERAL")
+  message     String
+  createdAt   DateTime @default(now())
+}
+
+model SiteSetting {
+  id    String @id @default("singleton")
+  key   String @unique
+  value String
+}

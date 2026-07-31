@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  /* Exact tokens pulled from the Figma file (BCsQJCMv2wt0Ad6sY5nJVI) via the REST API */
+  --color-cream: #faf8f5;
+  --color-cream-dark: #ebf1e6;
+  --color-ink: #261a16;
+  --color-ink-alt: #111f16;
+  --color-ink-soft: #6b5e5a;
+  --color-ink-soft-2: #526056;
+
+  --color-brand-50: #ebf1e6;
+  --color-brand-100: #c6d7cb;
+  --color-brand-300: #8fae6e;
+  --color-brand-400: #3f8f5e;
+  --color-brand-500: #058d37;
+  --color-brand-600: #079e3d;
+  --color-brand-700: #0b351e;
+  --color-brand-900: #04160c;
+
+  --color-rose-600: #d21c5c;
+  --color-rose-700: #a3164a;
+
+  --color-terracotta-500: #a3432b;
+  --color-terracotta-600: #8a3823;
+
+  --color-card-title: #111111;
+  --color-card-body: #555555;
+  --color-card-meta: #888888;
+
+  --font-display: var(--font-montserrat);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-lora);
+  --font-accent: var(--font-instrument-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+}
+
+.prose-devotional p {
+  margin-bottom: 1.1em;
+}
+
+.prose-devotional strong {
+  color: var(--color-ink);
+}
