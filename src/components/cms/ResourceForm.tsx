@@ -6,6 +6,7 @@ import Link from "next/link";
 import { RESOURCE_TYPES, RESOURCE_TYPE_LABEL, VISIBILITIES, type ResourceStatus, type ResourceType, type Visibility } from "@/lib/types";
 import { uploadMedia } from "@/lib/uploadMedia";
 import { RichTextEditor } from "./RichTextEditor";
+import { MediaPickerModal } from "./MediaPickerModal";
 
 export interface ResourceFormValues {
   id?: string;
@@ -47,6 +48,7 @@ export function ResourceForm({ initial, defaultType }: { initial?: ResourceFormV
   const [error, setError] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState<"cover" | "pdf" | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
@@ -253,6 +255,13 @@ export function ResourceForm({ initial, defaultType }: { initial?: ResourceFormV
               <span className="text-xs text-ink-soft/50">PNG, JPG, JPEG up to 5MB</span>
             </button>
             <input ref={coverInputRef} type="file" accept="image/*" hidden onChange={handleCoverUpload} />
+            <button
+              type="button"
+              onClick={() => setPickerOpen("cover")}
+              className="mt-2 text-xs font-semibold text-brand-600 hover:underline"
+            >
+              Or choose from Media Library
+            </button>
           </div>
 
           <div>
@@ -272,6 +281,13 @@ export function ResourceForm({ initial, defaultType }: { initial?: ResourceFormV
               <span className="text-xs text-ink-soft/50">{values.pdfUrl ? values.pdfUrl.split("/").pop() : "PDF up to 5MB"}</span>
             </button>
             <input ref={pdfInputRef} type="file" accept="application/pdf" hidden onChange={handlePdfUpload} />
+            <button
+              type="button"
+              onClick={() => setPickerOpen("pdf")}
+              className="mt-2 text-xs font-semibold text-brand-600 hover:underline"
+            >
+              Or choose from Media Library
+            </button>
           </div>
         </div>
 
@@ -319,6 +335,16 @@ export function ResourceForm({ initial, defaultType }: { initial?: ResourceFormV
           </div>
         </div>
       </div>
+
+      <MediaPickerModal
+        open={pickerOpen !== null}
+        onClose={() => setPickerOpen(null)}
+        filter={pickerOpen === "pdf" ? "pdf" : "image"}
+        onSelect={(media) => {
+          if (pickerOpen === "cover") set("coverImageUrl", media.url);
+          if (pickerOpen === "pdf") set("pdfUrl", media.url);
+        }}
+      />
     </div>
   );
 }
