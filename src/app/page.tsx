@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Star, WandSparkles } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { ConfettiBurst } from "@/components/site/ConfettiBurst";
 import { prisma } from "@/lib/prisma";
 import { getSettings } from "@/lib/settings";
 import { formatDate } from "@/lib/format";
@@ -26,6 +27,7 @@ export default async function HomePage() {
 
   return (
     <div>
+      <ConfettiBurst />
       {/* HERO */}
       <section className="relative overflow-hidden pb-28">
         <div className="absolute inset-0">
