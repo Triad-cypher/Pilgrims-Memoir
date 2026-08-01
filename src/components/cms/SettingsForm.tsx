@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { SettingsMap } from "@/lib/settings";
+import { uploadMedia } from "@/lib/uploadMedia";
 
 function Field({
   label,
@@ -57,18 +58,23 @@ function ImageField({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("/api/cms/media", { method: "POST", body: formData });
-    setUploading(false);
-    if (res.ok) {
-      const data = await res.json();
-      onChange(data.media.url);
+    setError(null);
+    try {
+      const result = await uploadMedia(file);
+      if (result.ok) {
+        onChange(result.media.url);
+      } else {
+        setError(result.error);
+      }
+    } finally {
+      setUploading(false);
+      e.target.value = "";
     }
   }
 
@@ -85,6 +91,7 @@ function ImageField({
         <span className="text-sm text-ink-soft">{uploading ? "Uploading…" : "Click to replace image"}</span>
       </button>
       <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleUpload} />
+      {error && <p className="mt-1.5 text-xs text-rose-600">{error}</p>}
     </div>
   );
 }
@@ -119,13 +126,16 @@ export function SettingsForm({ initial }: { initial: SettingsMap }) {
         <ImageField label="Hero Background Image" value={values.heroImageUrl} onChange={(v) => set("heroImageUrl", v)} />
       </Section>
 
-      <Section title="Hero Stats">
-        <Field label="Stat 1 Value" value={values.stat1Value} onChange={(v) => set("stat1Value", v)} />
-        <Field label="Stat 1 Label" value={values.stat1Label} onChange={(v) => set("stat1Label", v)} />
-        <Field label="Stat 2 Value" value={values.stat2Value} onChange={(v) => set("stat2Value", v)} />
-        <Field label="Stat 2 Label" value={values.stat2Label} onChange={(v) => set("stat2Label", v)} />
-        <Field label="Stat 3 Value" value={values.stat3Value} onChange={(v) => set("stat3Value", v)} />
-        <Field label="Stat 3 Label" value={values.stat3Label} onChange={(v) => set("stat3Label", v)} />
+      <Section title="Hero Bible Verse">
+        <div className="sm:col-span-2">
+          <Field
+            label="Verse Text"
+            value={values.heroVerseText}
+            onChange={(v) => set("heroVerseText", v)}
+            textarea
+            rows={3}
+          />
+        </div>
       </Section>
 
       <Section title="About The Author">

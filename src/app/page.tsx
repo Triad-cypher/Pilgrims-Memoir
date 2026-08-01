@@ -55,19 +55,8 @@ export default async function HomePage() {
             <ArrowUpRight size={14} />
           </Link>
 
-          <div className="mx-auto mt-16 flex max-w-lg justify-center rounded-[50px] bg-white/10 py-5 shadow-[0_8px_32px_rgba(0,0,0,0.2)] ring-1 ring-white/25 backdrop-blur-xl backdrop-saturate-150">
-            <div className="grid w-full grid-cols-3 divide-x divide-white/20 text-center text-white">
-              {[
-                [settings.stat1Value, settings.stat1Label],
-                [settings.stat2Value, settings.stat2Label],
-                [settings.stat3Value, settings.stat3Label],
-              ].map(([value, label]) => (
-                <div key={label} className="px-2">
-                  <p className="text-[32px] font-bold leading-tight">{value}</p>
-                  <p className="mt-1 text-xs uppercase tracking-wide text-[#E2E8F0]">{label}</p>
-                </div>
-              ))}
-            </div>
+          <div className="mx-auto mt-16 max-w-2xl rounded-[32px] bg-white/10 px-8 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.2)] ring-1 ring-white/25 backdrop-blur-xl backdrop-saturate-150">
+            <p className="font-serif text-lg italic leading-relaxed text-white sm:text-xl">{settings.heroVerseText}</p>
           </div>
         </div>
       </section>
