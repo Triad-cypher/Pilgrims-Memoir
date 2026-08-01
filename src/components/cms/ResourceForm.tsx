@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { RESOURCE_TYPES, RESOURCE_TYPE_LABEL, VISIBILITIES, type ResourceStatus, type ResourceType, type Visibility } from "@/lib/types";
+import { uploadMedia } from "@/lib/uploadMedia";
 import { RichTextEditor } from "./RichTextEditor";
 
 export interface ResourceFormValues {
@@ -66,31 +67,38 @@ export function ResourceForm({ initial, defaultType }: { initial?: ResourceFormV
     set("tags", tags.filter((t) => t !== tag).join(","));
   }
 
-  async function uploadFile(file: File): Promise<string | null> {
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("/api/cms/media", { method: "POST", body: formData });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.media.url as string;
-  }
-
   async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingCover(true);
-    const url = await uploadFile(file);
-    setUploadingCover(false);
-    if (url) set("coverImageUrl", url);
+    setError(null);
+    try {
+      const result = await uploadMedia(file);
+      if (result.ok) {
+        set("coverImageUrl", result.media.url);
+      } else {
+        setError(result.error);
+      }
+    } finally {
+      setUploadingCover(false);
+    }
   }
 
   async function handlePdfUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingPdf(true);
-    const url = await uploadFile(file);
-    setUploadingPdf(false);
-    if (url) set("pdfUrl", url);
+    setError(null);
+    try {
+      const result = await uploadMedia(file);
+      if (result.ok) {
+        set("pdfUrl", result.media.url);
+      } else {
+        setError(result.error);
+      }
+    } finally {
+      setUploadingPdf(false);
+    }
   }
 
   async function handleSave(status: ResourceStatus) {

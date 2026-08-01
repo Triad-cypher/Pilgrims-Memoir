@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { uploadMedia } from "@/lib/uploadMedia";
 
 export interface MediaItem {
   id: string;
@@ -24,6 +25,7 @@ export function MediaLibraryClient({ initialMedia }: { initialMedia: MediaItem[]
   const [media, setMedia] = useState(initialMedia);
   const [selectedId, setSelectedId] = useState<string | null>(initialMedia[0]?.id ?? null);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selected = media.find((m) => m.id === selectedId) ?? null;
@@ -32,15 +34,18 @@ export function MediaLibraryClient({ initialMedia }: { initialMedia: MediaItem[]
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("/api/cms/media", { method: "POST", body: formData });
-    setUploading(false);
-    e.target.value = "";
-    if (res.ok) {
-      const data = await res.json();
-      setMedia((m) => [data.media, ...m]);
-      setSelectedId(data.media.id);
+    setUploadError(null);
+    try {
+      const result = await uploadMedia(file);
+      if (result.ok) {
+        setMedia((m) => [result.media, ...m]);
+        setSelectedId(result.media.id);
+      } else {
+        setUploadError(result.error);
+      }
+    } finally {
+      setUploading(false);
+      e.target.value = "";
     }
   }
 
@@ -75,6 +80,10 @@ export function MediaLibraryClient({ initialMedia }: { initialMedia: MediaItem[]
           </button>
           <input ref={fileInputRef} type="file" accept="image/*,application/pdf" hidden onChange={handleUpload} />
         </div>
+
+        {uploadError && (
+          <p className="mb-4 rounded-lg bg-rose-50 px-4 py-2.5 text-sm text-rose-600">{uploadError}</p>
+        )}
 
         {media.length === 0 ? (
           <p className="text-sm text-ink-soft/60">No media uploaded yet.</p>

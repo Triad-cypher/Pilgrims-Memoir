@@ -20,6 +20,24 @@ export async function POST(request: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // File was already uploaded directly to Blob storage from the browser (bypasses the
+  // serverless function's ~4.5MB request body limit) — just record the metadata.
+  if (request.headers.get("content-type")?.includes("application/json")) {
+    const body = await request.json();
+    if (!body.url || !body.filename) {
+      return NextResponse.json({ error: "Missing url or filename." }, { status: 400 });
+    }
+    const media = await prisma.media.create({
+      data: {
+        filename: body.filename,
+        url: body.url,
+        mimeType: body.mimeType || "application/octet-stream",
+        sizeBytes: body.sizeBytes || 0,
+      },
+    });
+    return NextResponse.json({ ok: true, media });
+  }
+
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
   if (!file) return NextResponse.json({ error: "No file provided." }, { status: 400 });
