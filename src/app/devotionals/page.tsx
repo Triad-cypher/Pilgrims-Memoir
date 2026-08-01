@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ChevronDown, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { DevotionalCard } from "@/components/site/DevotionalCard";
 import { Pagination } from "@/components/site/Pagination";
+import { LiveSearchBar } from "@/components/site/LiveSearchBar";
 import { prisma } from "@/lib/prisma";
 import { formatMonthYear } from "@/lib/format";
 import { htmlToParagraphs, stripMonthPrefix } from "@/lib/text";
@@ -22,27 +23,24 @@ export default async function DevotionalsPage({
   const q = params.q?.trim() ?? "";
   const sort = params.sort === "oldest" ? "asc" : "desc";
 
-  const latest = await prisma.resource.findFirst({
-    where: { type: "DEVOTIONAL", status: "PUBLISHED" },
-    orderBy: { publishAt: "desc" },
-  });
+  const latest = q
+    ? null
+    : await prisma.resource.findFirst({
+        where: { type: "DEVOTIONAL", status: "PUBLISHED" },
+        orderBy: { publishAt: "desc" },
+      });
+
+  const devotionalWhere = {
+    type: "DEVOTIONAL",
+    status: "PUBLISHED",
+    ...(latest ? { id: { not: latest.id } } : {}),
+    ...(q ? { title: { contains: q, mode: "insensitive" as const } } : {}),
+  };
 
   const [total, devotionals] = await Promise.all([
-    prisma.resource.count({
-      where: {
-        type: "DEVOTIONAL",
-        status: "PUBLISHED",
-        id: latest ? { not: latest.id } : undefined,
-        title: q ? { contains: q } : undefined,
-      },
-    }),
+    prisma.resource.count({ where: devotionalWhere }),
     prisma.resource.findMany({
-      where: {
-        type: "DEVOTIONAL",
-        status: "PUBLISHED",
-        id: latest ? { not: latest.id } : undefined,
-        title: q ? { contains: q } : undefined,
-      },
+      where: devotionalWhere,
       orderBy: { publishAt: sort },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
@@ -71,29 +69,8 @@ export default async function DevotionalsPage({
           </div>
 
           <div className="mt-10 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-2xl font-bold text-[#111111]">Latest Post</h2>
-            <form className="flex gap-3" action="/devotionals">
-              <div className="relative">
-                <select
-                  name="sort"
-                  defaultValue={params.sort ?? "newest"}
-                  className="h-11 appearance-none rounded-xl bg-cream-dark/60 pl-4 pr-10 text-sm font-semibold text-[#111111] ring-1 ring-black/5"
-                >
-                  <option value="newest">Sort: Newest</option>
-                  <option value="oldest">Sort: Oldest</option>
-                </select>
-                <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft/60" />
-              </div>
-              <div className="relative">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-soft/50" />
-                <input
-                  name="q"
-                  defaultValue={q}
-                  placeholder="Search posts..."
-                  className="h-11 rounded-xl bg-cream-dark/60 pl-10 pr-4 text-sm outline-none ring-1 ring-black/5 placeholder:text-ink-soft/50"
-                />
-              </div>
-            </form>
+            <h2 className="text-2xl font-bold text-[#111111]">{q ? "Search Results" : "Latest Post"}</h2>
+            <LiveSearchBar basePath="/devotionals" initialQuery={q} initialSort={params.sort ?? "newest"} />
           </div>
 
           {latest && (
@@ -117,12 +94,14 @@ export default async function DevotionalsPage({
                   <Link href={`/devotionals/${latest.slug}`} className="inline-flex items-center gap-1 text-sm font-bold text-ink">
                     Read Full Post <span aria-hidden>›</span>
                   </Link>
-                  <Link
-                    href={`/devotionals/${latest.slug}`}
-                    className="rounded-full bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600"
-                  >
-                    Download
-                  </Link>
+                  {latest.pdfUrl && (
+                    <a
+                      href={`/api/resources/${latest.id}/download`}
+                      className="rounded-full bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600"
+                    >
+                      Download
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
@@ -145,7 +124,9 @@ export default async function DevotionalsPage({
           </div>
 
           {devotionals.length === 0 ? (
-            <p className="text-sm text-ink-soft/60">No devotionals found.</p>
+            <p className="text-sm text-ink-soft/60">
+              {q ? `No devotionals match "${q}".` : "No devotionals found."}
+            </p>
           ) : (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {devotionals.map((d) => (

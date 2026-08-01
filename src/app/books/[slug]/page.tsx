@@ -76,7 +76,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ slu
                     </Link>
                     {book.pdfUrl && (
                       <a
-                        href={book.pdfUrl}
+                        href={`/api/resources/${book.id}/download`}
                         className="rounded-full bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600"
                       >
                         Download E-book

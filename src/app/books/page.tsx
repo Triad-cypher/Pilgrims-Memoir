@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { ResourceCard } from "@/components/site/ResourceCard";
 import { Pagination } from "@/components/site/Pagination";
+import { LiveSearchBar } from "@/components/site/LiveSearchBar";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
 import { htmlToParagraphs } from "@/lib/text";
@@ -23,27 +24,24 @@ export default async function BooksPage({
   const q = params.q?.trim() ?? "";
   const sort = params.sort === "oldest" ? "asc" : "desc";
 
-  const [featured, total, books] = await Promise.all([
-    prisma.resource.findFirst({
-      where: { type: "BOOK", status: "PUBLISHED", visibility: "PUBLIC", featured: true },
-    }),
-    prisma.resource.count({
-      where: {
-        type: "BOOK",
-        status: "PUBLISHED",
-        visibility: "PUBLIC",
-        featured: false,
-        title: q ? { contains: q } : undefined,
-      },
-    }),
+  const featured = q
+    ? null
+    : await prisma.resource.findFirst({
+        where: { type: "BOOK", status: "PUBLISHED", visibility: "PUBLIC", featured: true },
+      });
+
+  const bookWhere = {
+    type: "BOOK",
+    status: "PUBLISHED",
+    visibility: "PUBLIC",
+    ...(q ? {} : { featured: false }),
+    ...(q ? { title: { contains: q, mode: "insensitive" as const } } : {}),
+  };
+
+  const [total, books] = await Promise.all([
+    prisma.resource.count({ where: bookWhere }),
     prisma.resource.findMany({
-      where: {
-        type: "BOOK",
-        status: "PUBLISHED",
-        visibility: "PUBLIC",
-        featured: false,
-        title: q ? { contains: q } : undefined,
-      },
+      where: bookWhere,
       orderBy: { createdAt: sort },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
@@ -74,28 +72,7 @@ export default async function BooksPage({
 
       <section className="bg-white px-5 pt-10 pb-20 sm:px-8">
         <div className="mx-auto max-w-[1200px]">
-          <form className="flex flex-wrap gap-3" action="/books">
-            <div className="relative">
-              <select
-                name="sort"
-                defaultValue={params.sort ?? "newest"}
-                className="h-11 appearance-none rounded-xl bg-cream-dark/60 pl-4 pr-10 text-sm font-semibold text-[#111111] ring-1 ring-black/5"
-              >
-                <option value="newest">Sort: Newest</option>
-                <option value="oldest">Sort: Oldest</option>
-              </select>
-              <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft/60" />
-            </div>
-            <div className="relative flex-1 sm:max-w-xs">
-              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-soft/50" />
-              <input
-                name="q"
-                defaultValue={q}
-                placeholder="Search posts..."
-                className="h-11 w-full rounded-xl bg-cream-dark/60 pl-10 pr-4 text-sm outline-none ring-1 ring-black/5 placeholder:text-ink-soft/50"
-              />
-            </div>
-          </form>
+          <LiveSearchBar basePath="/books" initialQuery={q} initialSort={params.sort ?? "newest"} />
 
           {featured && (
             <div className="mt-16 grid gap-12 lg:grid-cols-2">
@@ -132,12 +109,21 @@ export default async function BooksPage({
                   >
                     ORDER BOOK <ChevronRight size={12} />
                   </Link>
-                  <Link
-                    href={`/books/${featured.slug}`}
-                    className="rounded-full bg-brand-500 px-6 py-3.5 text-[13px] font-bold tracking-wide text-white hover:bg-brand-600"
-                  >
-                    Download E-book
-                  </Link>
+                  {featured.pdfUrl ? (
+                    <a
+                      href={`/api/resources/${featured.id}/download`}
+                      className="rounded-full bg-brand-500 px-6 py-3.5 text-[13px] font-bold tracking-wide text-white hover:bg-brand-600"
+                    >
+                      Download E-book
+                    </a>
+                  ) : (
+                    <Link
+                      href={`/books/${featured.slug}`}
+                      className="rounded-full bg-brand-500 px-6 py-3.5 text-[13px] font-bold tracking-wide text-white hover:bg-brand-600"
+                    >
+                      View Book
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
@@ -160,7 +146,9 @@ export default async function BooksPage({
           </div>
 
           {books.length === 0 ? (
-            <p className="text-sm text-ink-soft/60">No books found.</p>
+            <p className="text-sm text-ink-soft/60">
+              {q ? `No books match "${q}".` : "No books found."}
+            </p>
           ) : (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {books.map((b) => (

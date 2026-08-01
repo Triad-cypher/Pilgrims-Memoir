@@ -59,6 +59,7 @@ export default async function ResourceManagerPage({
                 <th className="px-6 py-3">Title</th>
                 <th className="px-6 py-3">Type</th>
                 <th className="px-6 py-3">Status</th>
+                <th className="px-6 py-3">Downloads</th>
                 <th className="px-6 py-3">Date</th>
                 <th className="px-6 py-3" />
               </tr>
@@ -81,6 +82,9 @@ export default async function ResourceManagerPage({
                       {r.status === "PUBLISHED" ? "Published" : "Draft"}
                     </span>
                   </td>
+                  <td className="px-6 py-4 text-ink-soft/60">
+                    {r.pdfUrl ? r.downloads.toLocaleString() : <span className="text-ink-soft/30">—</span>}
+                  </td>
                   <td className="px-6 py-4 text-ink-soft/60">{formatDate(r.createdAt)}</td>
                   <td className="px-6 py-4 text-right">
                     <ResourceRowActions id={r.id} />
@@ -89,7 +93,7 @@ export default async function ResourceManagerPage({
               ))}
               {resources.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-ink-soft/50">
+                  <td colSpan={6} className="px-6 py-10 text-center text-ink-soft/50">
                     No resources yet.
                   </td>
                 </tr>
