@@ -120,7 +120,7 @@ export function ContactForm() {
             onChange={(e) => set("phone", e.target.value)}
             onBlur={(e) => validatePhone(e.target.value)}
             inputMode="tel"
-            placeholder="+254 711 290058"
+            placeholder="+254 712 345 678"
             className={fieldClass}
           />
           {phoneError && <p className="mt-1.5 text-xs text-rose-600">{phoneError}</p>}
