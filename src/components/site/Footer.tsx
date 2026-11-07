@@ -54,24 +54,19 @@ export function Footer({ tagline }: { tagline?: string }) {
                 "Christian books, articles, and monthly devotionals to nourish your faith and encourage your walk with God."}
             </p>
             <div className="flex flex-wrap gap-2.5">
-              {SOCIAL_LINKS.map(({ Icon, href, label }) =>
-                href ? (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={label}
-                    className={`${SOCIAL_CLASS} hover:text-white`}
-                  >
-                    <Icon className="h-[18px] w-[18px]" />
-                  </a>
-                ) : (
-                  <span key={label} aria-label={label} className={SOCIAL_CLASS}>
-                    <Icon className="h-[18px] w-[18px]" />
-                  </span>
-                )
-              )}
+              {/* Networks without a link yet (href: null) are hidden until one is added above. */}
+              {SOCIAL_LINKS.filter((s) => s.href).map(({ Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className={`${SOCIAL_CLASS} hover:text-white`}
+                >
+                  <Icon className="h-[18px] w-[18px]" />
+                </a>
+              ))}
             </div>
           </div>
 
