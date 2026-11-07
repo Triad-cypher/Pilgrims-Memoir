@@ -44,6 +44,11 @@ function LoginForm() {
         </div>
         <h1 className="text-xl font-semibold text-ink">Sign in to your dashboard</h1>
         <p className="mt-1 text-sm text-ink-soft/70">Manage books, articles, devotionals, and comments.</p>
+        {params.get("reason") === "idle" && (
+          <p role="status" className="mt-4 rounded-lg bg-amber-50 px-3 py-2.5 text-sm text-amber-800">
+            You were signed out after 15 minutes of inactivity. Please sign in again.
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>

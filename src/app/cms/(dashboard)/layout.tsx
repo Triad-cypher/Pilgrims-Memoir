@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/getSession";
 import { Sidebar } from "@/components/cms/Sidebar";
+import { IdleTimeout } from "@/components/cms/IdleTimeout";
 import { prisma } from "@/lib/prisma";
 
 export default async function CmsDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -15,6 +16,7 @@ export default async function CmsDashboardLayout({ children }: { children: React
     <div className="min-h-screen bg-cream">
       <Sidebar adminName={session.name} avatarUrl={admin?.avatarUrl} />
       <div className="ml-[260px] min-h-screen">{children}</div>
+      <IdleTimeout />
     </div>
   );
 }
