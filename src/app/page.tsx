@@ -73,16 +73,25 @@ export default async function HomePage() {
             </h2>
             <div className="mt-5 max-w-xl space-y-4 text-[15px] leading-[24px] text-ink">
               {aboutParagraphs.map((p, i) => (
-                <p key={i} className={i === aboutParagraphs.length - 1 ? "font-semibold" : ""}>
+                <p
+                  key={i}
+                  className={
+                    i === 0
+                      ? "pb-1 font-quote text-[clamp(40px,4vw,56px)] leading-none text-[#0F3B26] italic"
+                      : i === aboutParagraphs.length - 1
+                        ? "font-semibold"
+                        : ""
+                  }
+                >
                   {p}
                 </p>
               ))}
             </div>
           </div>
 
-          <div className="relative mx-auto aspect-square w-full max-w-md overflow-hidden rounded-[32px] bg-cream-dark">
+          <div className="relative mx-auto aspect-square w-full max-w-md overflow-hidden rounded-[32px]">
             <Image src={settings.authorImageUrl} alt={settings.authorName} fill className="object-cover" />
-            <div className="absolute bottom-5 left-5 rounded-2xl bg-brand-500 px-5 py-3">
+            <div className="absolute bottom-10 left-10 rounded-2xl bg-brand-500 px-5 py-3">
               <p className="font-display text-lg text-white">
                 <span className="font-bold">{settings.authorName.split(" ")[0]}</span>{" "}
                 <span className="font-normal">{settings.authorName.split(" ").slice(1).join(" ")}</span>
