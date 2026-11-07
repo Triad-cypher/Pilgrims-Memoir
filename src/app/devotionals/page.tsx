@@ -1,17 +1,24 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { DevotionalCard } from "@/components/site/DevotionalCard";
 import { Pagination } from "@/components/site/Pagination";
 import { LiveSearchBar } from "@/components/site/LiveSearchBar";
 import { prisma } from "@/lib/prisma";
-import { formatMonthYear } from "@/lib/format";
-import { htmlToParagraphs, stripMonthPrefix } from "@/lib/text";
+import { formatDate, formatMonthYear } from "@/lib/format";
+import { getSettings } from "@/lib/settings";
+import { stripHtml, stripMonthPrefix } from "@/lib/text";
 
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 6;
+
+const CARD_DOTS = ["#B4532A", "#1E7A43", "#2B4C8C"];
+
+function readMinutes(body: string) {
+  return Math.max(1, Math.round(stripHtml(body).split(/\s+/).filter(Boolean).length / 200));
+}
 
 export default async function DevotionalsPage({
   searchParams,
@@ -21,131 +28,149 @@ export default async function DevotionalsPage({
   const params = await searchParams;
   const page = Math.max(1, Number(params.page ?? "1") || 1);
   const q = params.q?.trim() ?? "";
-  const sort = params.sort === "oldest" ? "asc" : "desc";
-
-  const latest = q
-    ? null
-    : await prisma.resource.findFirst({
-        where: { type: "DEVOTIONAL", status: "PUBLISHED" },
-        orderBy: { publishAt: "desc" },
-      });
+  const sort = params.sort ?? "newest";
+  const orderBy =
+    sort === "title" ? { title: "asc" as const } : { publishAt: sort === "oldest" ? ("asc" as const) : ("desc" as const) };
 
   const devotionalWhere = {
     type: "DEVOTIONAL",
     status: "PUBLISHED",
-    ...(latest ? { id: { not: latest.id } } : {}),
-    ...(q ? { title: { contains: q, mode: "insensitive" as const } } : {}),
+    ...(q
+      ? {
+          OR: [
+            { title: { contains: q, mode: "insensitive" as const } },
+            { excerpt: { contains: q, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
   };
 
-  const [total, devotionals] = await Promise.all([
+  const [settings, total, devotionals] = await Promise.all([
+    getSettings(),
     prisma.resource.count({ where: devotionalWhere }),
-    prisma.resource.findMany({
-      where: devotionalWhere,
-      orderBy: { publishAt: sort },
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-    }),
+    prisma.resource.findMany({ where: devotionalWhere, orderBy, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const bodyPoints = latest ? htmlToParagraphs(latest.body) : [];
+  const countLabel = `${total} ${total === 1 ? "devotional" : "devotionals"}`;
+  // The newest post gets a "Latest" badge when browsing the default (newest-first) list.
+  const showLatest = !q && sort === "newest" && page === 1;
 
   return (
-    <div className="reveal-sections">
-      <Header />
+    <div className="overflow-x-clip bg-[#F5F6F0] font-geist text-[#0F1A14]">
+      <Header glass />
 
-      <section className="px-5 pt-20 pb-8 sm:px-8">
-        <div className="mx-auto max-w-[1280px]">
-          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-start">
-            <h1 className="font-display text-5xl font-extrabold leading-tight text-[#111111] sm:text-6xl lg:text-[80px]">
-              Monthly
-              <br />
-              Devotionals
-            </h1>
-            <p className="max-w-sm pt-4 text-base text-[#707070]">
-              Unpack the deeper mysteries of Scripture. Walk through daily, Spirit-led insights designed to shift
-              your perspective and align your modern journey with eternal truths.
-            </p>
-          </div>
+      {/* HEADER */}
+      <section className="mx-auto flex max-w-[1312px] flex-wrap items-center justify-between gap-10 px-5 pt-[clamp(64px,7vw,104px)] pb-12 sm:px-[clamp(20px,4vw,48px)]">
+        <div className="in flex flex-[1_1_520px] flex-col gap-7">
+          <p className="m-0 inline-flex items-center gap-2.5 text-[13px] font-medium tracking-[0.1em] text-[#3E4A43] uppercase">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[#1E7A43]" />
+            Spirit-led insights
+          </p>
+          <h1 className="m-0 text-[clamp(56px,8.6vw,136px)] leading-[0.9] font-medium tracking-[-0.055em]">
+            <span className="font-quote font-normal tracking-[-0.03em] text-[#1E7A43] italic">Monthly</span>
+            <br />
+            Devotionals
+          </h1>
+          <p className="m-0 max-w-[520px] text-[19px] leading-[1.6] text-pretty text-[#36423B]">
+            Unpack the deeper mysteries of Scripture. Walk through daily, Spirit-led insights designed to shift your
+            perspective and align your modern journey with eternal truths.
+          </p>
+        </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-2xl font-bold text-[#111111]">{q ? "Search Results" : "Latest Post"}</h2>
-            <LiveSearchBar basePath="/devotionals" initialQuery={q} initialSort={params.sort ?? "newest"} />
-          </div>
-
-          {latest && (
-            <div className="mt-6 grid gap-8 rounded-3xl border border-black/5 bg-white p-6 sm:p-8 lg:grid-cols-[1fr_1fr]">
-              <div
-                className="relative flex aspect-[4/3] w-full items-center overflow-hidden rounded-2xl px-8 py-8 text-center"
-                style={{ backgroundColor: latest.accentColor ?? "#5c1010" }}
-              >
-                <p className="font-serif text-base italic leading-relaxed text-white/95">
-                  &ldquo;{latest.excerpt}&rdquo;
-                </p>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-ink">{latest.title}</h3>
-                <div className="mt-4 space-y-3 text-sm leading-relaxed text-ink-soft/80">
-                  {bodyPoints.slice(0, 2).map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
-                </div>
-                <div className="mt-6 flex flex-wrap items-center gap-4">
-                  <Link href={`/devotionals/${latest.slug}`} className="inline-flex items-center gap-1 text-sm font-bold text-ink">
-                    Read Full Post <span aria-hidden>›</span>
-                  </Link>
-                  {latest.pdfUrl && (
-                    <a
-                      href={`/api/resources/${latest.id}/download`}
-                      className="rounded-full bg-brand-500 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-600"
-                    >
-                      Download
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+        <div
+          className="in relative h-[400px] w-full flex-[0_1_440px] overflow-hidden rounded-[32px] bg-[#E4ECDF]"
+          style={{ animationDelay: ".15s" }}
+        >
+          <Image
+            src={settings.devotionalsImageUrl}
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1024px) 440px, 100vw"
+            className="object-cover"
+          />
         </div>
       </section>
 
-      <section className="px-5 py-14 sm:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-[#111111]">Previous Posts</h2>
-            <div className="flex gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-black/10 text-ink-soft">
-                <ChevronLeft size={16} />
-              </span>
-              <span className="flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-black/10 text-ink-soft">
-                <ChevronRight size={16} />
-              </span>
-            </div>
-          </div>
+      {/* CONTROLS */}
+      <div className="mx-auto max-w-[1312px] px-5 sm:px-[clamp(20px,4vw,48px)]">
+        <LiveSearchBar
+          basePath="/devotionals"
+          initialQuery={q}
+          initialSort={sort}
+          variant="pill"
+          noun="devotionals"
+          countLabel={countLabel}
+        />
+      </div>
 
-          {devotionals.length === 0 ? (
-            <p className="text-sm text-ink-soft/60">
-              {q ? `No devotionals match "${q}".` : "No devotionals found."}
+      {/* GRID */}
+      <section
+        aria-label="All devotionals"
+        className="mx-auto max-w-[1312px] px-5 pt-10 pb-[clamp(110px,12vw,160px)] sm:px-[clamp(20px,4vw,48px)]"
+      >
+        {devotionals.length === 0 ? (
+          <div className="flex flex-col items-center gap-2.5 rounded-[28px] border-[1.5px] border-dashed border-[#CDD3C8] px-6 py-20 text-center">
+            <p className="m-0 font-quote text-[36px]">
+              {q ? "No devotionals match your search." : "No devotionals published yet."}
             </p>
-          ) : (
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {devotionals.map((d) => (
-                <DevotionalCard
-                  key={d.id}
-                  href={`/devotionals/${d.slug}`}
-                  title={stripMonthPrefix(d.title)}
-                  monthLabel={formatMonthYear(d.publishAt)}
-                  excerpt={d.excerpt}
-                  accentColor={d.accentColor ?? "#1b4d34"}
-                  coverImageUrl={d.coverImageUrl}
-                  compact
-                />
-              ))}
-            </div>
-          )}
+            <p className="m-0 text-[16px] text-[#56615A]">
+              {q ? "Try a different word or phrase." : "New monthly devotionals will appear here."}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(340px,100%),1fr))] gap-6">
+            {devotionals.map((d, i) => {
+              const monthLabel = formatMonthYear(d.publishAt);
+              return (
+                <Link key={d.id} href={`/devotionals/${d.slug}`} className="rv lift flex flex-col gap-[18px] text-[#0F1A14]">
+                  <div
+                    className="zoom relative flex h-[420px] items-center overflow-hidden rounded-[28px] px-10 text-center"
+                    style={d.coverImageUrl ? undefined : { backgroundColor: d.accentColor ?? "#1b4d34" }}
+                  >
+                    {d.coverImageUrl ? (
+                      <Image
+                        src={d.coverImageUrl}
+                        alt={d.title}
+                        fill
+                        sizes="(min-width: 1024px) 420px, 100vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <p className="relative m-0 line-clamp-6 font-quote text-[26px] leading-[1.25] text-white/95 italic">
+                        &ldquo;{d.excerpt}&rdquo;
+                      </p>
+                    )}
+                    <span className="glass absolute top-4 left-4 rounded-full px-3 py-1.5 text-[12px] font-semibold tracking-[0.08em] text-[#0F1A14] uppercase">
+                      {showLatest && i === 0 ? `Latest · ${monthLabel}` : monthLabel}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-2.5 px-1.5">
+                    <span className="inline-flex items-center gap-2 self-start rounded-full border border-[#DDE2D8] bg-white px-3 py-1.5 text-[13px] font-medium text-[#36423B]">
+                      <span
+                        aria-hidden="true"
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ background: CARD_DOTS[i % CARD_DOTS.length] }}
+                      />
+                      {d.category}
+                    </span>
+                    <h2 className="m-0 text-[24px] font-semibold tracking-[-0.025em]">{stripMonthPrefix(d.title)}</h2>
+                    <p className="m-0 line-clamp-3 text-[16px] leading-[1.6] text-[#4A564E]">{d.excerpt}</p>
+                    <p className="m-0 flex items-center justify-between text-[14px] text-[#56615A]">
+                      {formatDate(d.publishAt)} · {readMinutes(d.body)} min read
+                      <span className="inline-flex items-center gap-1.5 font-medium text-[#1E7A43]">
+                        Read <ArrowUpRight size={12} />
+                      </span>
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
 
-          <Pagination basePath="/devotionals" currentPage={page} totalPages={totalPages} extraQuery={{ q, sort: params.sort }} />
-        </div>
+        <Pagination basePath="/devotionals" currentPage={page} totalPages={totalPages} extraQuery={{ q, sort: params.sort }} />
       </section>
 
       <Footer />

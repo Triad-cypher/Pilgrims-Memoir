@@ -10,6 +10,7 @@ export function LiveSearchBar({
   initialSort,
   variant = "default",
   countLabel,
+  noun = "books",
 }: {
   basePath: string;
   initialQuery: string;
@@ -17,6 +18,8 @@ export function LiveSearchBar({
   /** "pill" is the rounded white bar used on the Books page. */
   variant?: "default" | "pill";
   countLabel?: string;
+  /** What's being searched, e.g. "books" → "Search books…". */
+  noun?: string;
 }) {
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
@@ -51,7 +54,7 @@ export function LiveSearchBar({
         <div className="flex flex-[1_1_520px] flex-wrap gap-3">
           <div className="relative">
             <label htmlFor="sort" className="sr-only">
-              Sort books
+              Sort {noun}
             </label>
             <select
               id="sort"
@@ -71,14 +74,14 @@ export function LiveSearchBar({
           <div className="relative max-w-[460px] flex-[1_1_280px]">
             <Search size={18} className="absolute top-1/2 left-[18px] -translate-y-1/2 text-[#56615A]" />
             <label htmlFor="q" className="sr-only">
-              Search books
+              Search {noun}
             </label>
             <input
               id="q"
               type="search"
               value={query}
               onChange={(e) => handleQueryChange(e.target.value)}
-              placeholder="Search books…"
+              placeholder={`Search ${noun}…`}
               className={`${pillField} w-full pr-5 pl-12 placeholder:text-[#56615A]`}
             />
           </div>

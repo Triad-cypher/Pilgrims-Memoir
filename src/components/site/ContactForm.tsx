@@ -6,7 +6,7 @@ import { ArrowUpRight, Check } from "lucide-react";
 import { CountrySelect } from "./CountrySelect";
 
 const fieldClass =
-  "field w-full min-h-[54px] rounded-2xl border-[1.5px] border-[#E1E5DC] bg-[#F5F6F0] px-[18px] text-[16px] text-[#0F1A14] outline-none placeholder:text-[#56615A]/80";
+  "w-full rounded-lg bg-[#F4F4F5] px-4 py-4 text-sm text-black outline-none placeholder:text-[#71717A] focus:ring-2 focus:ring-brand-400";
 const labelClass = "text-[14px] font-medium";
 
 const PHONE_PATTERN = /^[0-9+\-\s()]{7,20}$/;
@@ -194,7 +194,7 @@ export function ContactForm() {
               value={form.message}
               onChange={(e) => set("message", e.target.value)}
               placeholder={'I would like to order a copy of "Issue 2: The Great Transition".'}
-              className={`${fieldClass} resize-y py-4 leading-[1.55]`}
+              className={`${fieldClass} resize-y`}
             />
           </div>
 
