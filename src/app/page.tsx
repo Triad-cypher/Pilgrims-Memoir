@@ -10,6 +10,29 @@ import { formatDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Splits a heading into plain and accented (green italic serif) parts. Words wrapped in *asterisks*
+ * are accented; without asterisks, the second-to-last word is (e.g. "…his *transforming* power").
+ */
+function accentTitle(title: string): { text: string; accent: boolean }[] {
+  if (title.includes("*")) {
+    return title
+      .split(/(\*[^*]+\*)/)
+      .filter(Boolean)
+      .map((part) =>
+        part.startsWith("*") && part.endsWith("*") ? { text: part.slice(1, -1), accent: true } : { text: part, accent: false }
+      );
+  }
+  const words = title.trim().split(/\s+/);
+  if (words.length < 3) return [{ text: title, accent: false }];
+  const i = words.length - 2;
+  return [
+    { text: words.slice(0, i).join(" ") + " ", accent: false },
+    { text: words[i], accent: true },
+    { text: " " + words.slice(i + 1).join(" "), accent: false },
+  ];
+}
+
 export default async function HomePage() {
   const settings = await getSettings();
 
@@ -74,8 +97,16 @@ export default async function HomePage() {
         <div className="mx-auto max-w-[1280px]">
           <div className="grid gap-10 lg:grid-cols-[2fr_1fr] lg:items-center">
             <div className="text-center lg:text-left">
-              <h2 className="font-display text-4xl font-medium leading-tight text-ink-alt sm:text-5xl lg:text-[72px]">
-                {settings.midTitle}
+              <h2 className="font-geist text-[clamp(40px,5.6vw,80px)] leading-[0.95] font-medium tracking-[-0.055em] text-[#0F1A14]">
+                {accentTitle(settings.midTitle).map((part, i) =>
+                  part.accent ? (
+                    <span key={i} className="font-quote font-normal tracking-[-0.03em] text-[#1E7A43] italic">
+                      {part.text}
+                    </span>
+                  ) : (
+                    <span key={i}>{part.text}</span>
+                  )
+                )}
               </h2>
               <p className="mt-4 font-accent text-base text-ink-soft-2">{settings.midSubtitle}</p>
               <div className="mt-7 flex flex-wrap justify-center gap-4 lg:justify-start">
