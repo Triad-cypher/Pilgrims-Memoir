@@ -90,3 +90,14 @@ model SiteSetting {
   key   String @unique
   value String
 }
+
+// One row per browser session on the public site; country/city come from the host's geo-IP headers.
+model SiteVisit {
+  id        String   @id @default(cuid())
+  country   String?
+  city      String?
+  path      String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

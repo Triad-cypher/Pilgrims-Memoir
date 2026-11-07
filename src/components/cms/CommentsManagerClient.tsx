@@ -185,15 +185,17 @@ export function CommentsManagerClient({ initialComments }: { initialComments: Co
               </div>
             )}
 
-            <button
-              onClick={() => updateStatus(selected.id, "APPROVED")}
-              className="mt-5 w-full rounded-full bg-brand-500 py-2.5 text-sm font-semibold text-white hover:bg-brand-600"
-            >
-              Approve Comment
-            </button>
+            {selected.status !== "APPROVED" && (
+              <button
+                onClick={() => updateStatus(selected.id, "APPROVED")}
+                className="mt-5 w-full rounded-full bg-brand-500 py-2.5 text-sm font-semibold text-white hover:bg-brand-600"
+              >
+                Approve Comment
+              </button>
+            )}
             <button
               onClick={() => setShowReplyBox((v) => !v)}
-              className="mt-2 w-full rounded-full border border-black/10 py-2.5 text-sm font-semibold text-ink hover:bg-cream"
+              className={`${selected.status === "APPROVED" ? "mt-5" : "mt-2"} w-full rounded-full border border-black/10 py-2.5 text-sm font-semibold text-ink hover:bg-cream`}
             >
               Write Reply
             </button>

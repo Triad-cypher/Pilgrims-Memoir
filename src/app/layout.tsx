@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat, Inter, Lora, Instrument_Sans } from "next/font/google";
+import { VisitTracker } from "@/components/site/VisitTracker";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -42,7 +43,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${montserrat.variable} ${inter.variable} ${lora.variable} ${instrumentSans.variable}`}
     >
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <VisitTracker />
+        {children}
+      </body>
     </html>
   );
 }
