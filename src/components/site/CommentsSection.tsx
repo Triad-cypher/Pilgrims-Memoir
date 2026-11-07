@@ -10,7 +10,16 @@ export interface PublicComment {
   createdAt: string;
 }
 
-export function CommentsSection({ resourceId, comments }: { resourceId: string; comments: PublicComment[] }) {
+export function CommentsSection({
+  resourceId,
+  comments,
+  variant = "default",
+}: {
+  resourceId: string;
+  comments: PublicComment[];
+  /** "cards" is the larger card layout used on the book detail page. */
+  variant?: "default" | "cards";
+}) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [comment, setComment] = useState("");
@@ -32,6 +41,91 @@ export function CommentsSection({ resourceId, comments }: { resourceId: string; 
     } else {
       setStatus("error");
     }
+  }
+
+  if (variant === "cards") {
+    const field =
+      "field min-h-[52px] rounded-2xl border-[1.5px] border-[#DDE2D8] bg-[#F5F6F0] px-[18px] text-[16px] text-[#0F1A14] outline-none";
+    return (
+      <div className="flex flex-col gap-7 font-geist">
+        <div className="flex items-baseline gap-3.5">
+          <h2 className="m-0 text-[clamp(36px,4vw,56px)] font-medium tracking-[-0.045em]">Comments</h2>
+          <span className="font-quote text-[36px] text-[#1E7A43] italic">({comments.length})</span>
+        </div>
+
+        {comments.length === 0 && <p className="m-0 text-[17px] text-[#56615A]">Be the first to leave a comment.</p>}
+        {comments.map((c) => (
+          <article key={c.id} className="flex gap-4 rounded-3xl border border-[#E1E5DC] bg-white p-[22px]">
+            <span
+              aria-hidden="true"
+              className="grid h-11 w-11 flex-none place-items-center rounded-full bg-[#E4ECDF] font-semibold text-[#0F3B26]"
+            >
+              {c.commenterName.trim().charAt(0).toUpperCase()}
+            </span>
+            <div className="flex min-w-0 flex-col gap-1.5">
+              <p className="m-0 font-semibold">
+                {c.commenterName}{" "}
+                <span className="text-[14px] font-normal text-[#56615A]">· {formatDate(c.createdAt)}</span>
+              </p>
+              <p className="m-0 text-[16px] leading-[1.6] whitespace-pre-wrap text-[#36423B]">{c.body}</p>
+            </div>
+          </article>
+        ))}
+
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-3.5 rounded-[28px] border border-[#E1E5DC] bg-white p-[clamp(20px,3vw,32px)]"
+        >
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(240px,100%),1fr))] gap-3.5">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="cn" className="text-[14px] font-medium">
+                Your name
+              </label>
+              <input id="cn" required placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className={field} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="ce" className="text-[14px] font-medium">
+                Your email
+              </label>
+              <input
+                id="ce"
+                required
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={field}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="ct" className="text-[14px] font-medium">
+              Comment
+            </label>
+            <textarea
+              id="ct"
+              required
+              rows={4}
+              placeholder="Write a comment…"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className={`${field} resize-y py-4 leading-[1.5]`}
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="submit"
+              disabled={status === "loading"}
+              className="hero-btn min-h-[52px] cursor-pointer rounded-full border-0 bg-[#0F1A14] px-7 text-[16px] font-medium text-[#F5F6F0] disabled:opacity-60"
+            >
+              {status === "loading" ? "Posting…" : "Post Comment"}
+            </button>
+            {status === "sent" && <span className="text-sm text-[#1E7A43]">Thanks! Your comment is awaiting approval.</span>}
+            {status === "error" && <span className="text-sm text-rose-600">Something went wrong. Please try again.</span>}
+          </div>
+        </form>
+      </div>
+    );
   }
 
   return (

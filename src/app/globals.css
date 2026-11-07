@@ -298,3 +298,10 @@ body {
 .dev-art:hover .dev-layer-ink {
   transform: translate(12px, 8px) rotate(2.5deg);
 }
+
+/* Frosted chips/buttons on dark backgrounds (book detail hero). */
+.glass-dark {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}

@@ -14,3 +14,10 @@ export function htmlToParagraphs(html: string): string[] {
 export function stripHtml(html: string): string {
   return htmlToParagraphs(html).join(" ");
 }
+
+/** Splits "Verse text. [Heb. 11: 1 (NKJV)]" into the verse and its citation ("Heb. 11:1 (NKJV)"). */
+export function splitCitation(text: string): { text: string; cite: string } {
+  const match = text.trim().match(/^([\s\S]*?)\s*\[([^\]]+)\]\s*$/);
+  if (!match) return { text: text.trim(), cite: "" };
+  return { text: match[1], cite: match[2].replace(/:\s+/g, ":") };
+}
