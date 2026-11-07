@@ -75,13 +75,7 @@ export default async function HomePage() {
               {aboutParagraphs.map((p, i) => (
                 <p
                   key={i}
-                  className={
-                    i === 0
-                      ? "pb-1 font-quote text-[clamp(40px,4vw,56px)] leading-none text-[#0F3B26] italic"
-                      : i === aboutParagraphs.length - 1
-                        ? "font-semibold"
-                        : ""
-                  }
+                  className={i === 0 ? "font-quote text-[18px] text-[#0F3B26] italic" : undefined}
                 >
                   {p}
                 </p>
@@ -91,11 +85,18 @@ export default async function HomePage() {
 
           <div className="relative mx-auto aspect-square w-full max-w-md overflow-hidden rounded-[32px]">
             <Image src={settings.authorImageUrl} alt={settings.authorName} fill className="object-cover" />
-            <div className="absolute bottom-10 left-10 rounded-2xl bg-brand-500 px-5 py-3">
-              <p className="font-display text-lg text-white">
-                <span className="font-bold">{settings.authorName.split(" ")[0]}</span>{" "}
-                <span className="font-normal">{settings.authorName.split(" ").slice(1).join(" ")}</span>
-              </p>
+            <div className="glass absolute right-9 bottom-10 left-9 flex items-center justify-between gap-3 rounded-[22px] px-5 py-4 font-geist">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[20px] font-semibold tracking-[-0.02em] text-[#0F1A14]">{settings.authorName}</span>
+                <span className="text-[14px] text-[#3E4A43]">Author · Youth leader</span>
+              </div>
+              <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true" className="shrink-0">
+                <circle cx="16" cy="16" r="16" fill="#0F3B26" />
+                <path
+                  d="M23 7.5c-5.4.4-10.2 4.6-11.8 11l-1.2 4.6 1.8-1.3c.9-2.5 2.4-4.3 4.3-5.3 3.4-1.1 6-4.8 6.9-9z"
+                  fill="#E7D9A8"
+                />
+              </svg>
             </div>
           </div>
         </div>
