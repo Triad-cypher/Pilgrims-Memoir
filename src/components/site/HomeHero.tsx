@@ -151,9 +151,9 @@ export function HomeHero({
         </div>
 
         <div className="relative z-[2] mt-8 grid w-full max-w-[1312px] grid-cols-1 items-end gap-6 md:grid-cols-2 lg:mt-[clamp(-128px,-7.65vw,-34px)] lg:flex lg:justify-between">
-          <div className="flex max-w-[348px] flex-col gap-4 pb-2.5 md:order-2 lg:order-none lg:flex-[1_1_200px]">
-            <p className="m-0 text-[16px] leading-[1.55] text-pretty text-[#233128]">{tagline}</p>
-            <div className="flex flex-wrap gap-2.5">
+          <div className="flex max-w-[348px] flex-col gap-4 pb-2.5 max-md:mx-auto max-md:items-center md:order-2 lg:order-none lg:flex-[1_1_200px]">
+            <p className="m-0 text-[16px] leading-[1.55] text-pretty text-[#233128] max-md:text-justify max-md:[text-align-last:center]">{tagline}</p>
+            <div className="flex flex-wrap gap-2.5 max-md:justify-center">
               <Link
                 href="/books"
                 className="hero-btn inline-flex min-h-11 items-center gap-2.5 rounded-full bg-[#0F1A14] py-1 pr-1 pl-[19px] text-[15px] font-medium text-[#F5F6F0]"
