@@ -10,6 +10,20 @@ import { formatDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
+/** Stat tile: "100+" renders as a large number with the trailing "+" in green. */
+function StatCard({ label, value, className }: { label: string; value: string; className: string }) {
+  const [, number, suffix] = value.match(/^(.*?)(D*)$/) ?? [value, value, ""];
+  return (
+    <div className={`flex min-h-[150px] flex-[1_1_0] flex-col justify-between gap-6 rounded-[28px] px-6 py-7 sm:min-h-[170px] sm:flex-[0_1_auto] sm:gap-8 sm:rounded-[32px] sm:py-10 sm:pr-12 sm:pl-11 ${className}`}>
+      <span className="text-[12px] font-medium tracking-[0.1em] text-[#36423B] uppercase sm:text-[15px]">{label}</span>
+      <span className="text-[36px] leading-[0.9] font-semibold sm:text-[42px] tracking-[-0.06em] text-[#0F3B26]">
+        {number}
+        {suffix && <span className="text-[#1E7A43]">{suffix}</span>}
+      </span>
+    </div>
+  );
+}
+
 /**
  * Splits a heading into plain and accented (green italic serif) parts. Words wrapped in *asterisks*
  * are accented; without asterisks, the second-to-last word is (e.g. "…his *transforming* power").
@@ -95,8 +109,8 @@ export default async function HomePage() {
       {/* MID CTA */}
       <section className="bg-cream px-5 py-16 sm:px-8 sm:py-24">
         <div className="mx-auto max-w-[1280px]">
-          <div className="grid gap-10 lg:grid-cols-[2fr_1fr] lg:items-center">
-            <div className="text-center lg:text-left">
+          <div>
+            <div className="max-w-[900px] text-center lg:text-left">
               <h2 className="font-geist text-[clamp(40px,5.6vw,80px)] leading-[0.95] font-medium tracking-[-0.055em] text-[#0F1A14]">
                 {accentTitle(settings.midTitle).map((part, i) =>
                   part.accent ? (
@@ -124,23 +138,24 @@ export default async function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="flex justify-center gap-5 lg:flex-col">
-              <div className="rounded-2xl bg-brand-50 p-4">
-                <p className="font-accent text-[11px] font-semibold uppercase tracking-wide text-ink-soft-2">
-                  Books Released
-                </p>
-                <p className="mt-1 font-display text-[32px] font-semibold text-brand-600">
-                  {settings.booksReleasedCount}
-                </p>
-              </div>
-              <div className="rounded-2xl bg-brand-50 p-4">
-                <p className="font-accent text-[11px] font-semibold uppercase tracking-wide text-ink-soft-2">
-                  Monthly articles
-                </p>
-                <p className="mt-1 font-display text-[32px] font-semibold text-brand-600">
-                  {settings.monthlyArticlesCount}
-                </p>
-              </div>
+            <div className="mt-12 flex flex-wrap gap-5 font-geist">
+              <StatCard label="Monthly articles" value={settings.monthlyArticlesCount} className="bg-white" />
+              <StatCard label="Books released" value={settings.booksReleasedCount} className="bg-[#E4ECDF]" />
+              <figure className="relative m-0 flex min-h-[170px] flex-[1_1_380px] flex-col justify-between gap-6 overflow-hidden rounded-[32px] bg-[#0F3B26] p-[clamp(28px,4vw,44px)] text-[#F5F6F0]">
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 200 200"
+                  className="absolute -top-10 -right-10 h-60 w-60 opacity-[0.12]"
+                >
+                  <path d="M100 0v200M0 100h200M30 30l140 140M170 30L30 170" stroke="#E7D9A8" strokeWidth="2" />
+                </svg>
+                <blockquote className="relative m-0 font-quote text-[clamp(30px,3.4vw,36px)] leading-[1.05] text-balance">
+                  For our citizenship is in heaven…
+                </blockquote>
+                <figcaption className="relative text-[13px] font-medium tracking-[0.1em] text-[#E7D9A8] uppercase">
+                  Phil. 3:20 (NKJV)
+                </figcaption>
+              </figure>
             </div>
           </div>
         </div>
