@@ -68,9 +68,9 @@ export default async function HomePage() {
               <Star size={10} />
               {settings.aboutTag}
             </span>
-            <h2 className="mt-4 font-geist text-3xl font-medium tracking-[-0.045em] text-[#0F1A14] sm:text-4xl lg:text-[44px]">
+            <h2 className="mt-4 font-geist text-4xl font-medium tracking-[-0.045em] text-[#0F1A14] sm:text-[44px] lg:text-[52px]">
               {settings.aboutTitle.split(" ")[0]}{" "}
-              <span className="font-quote font-normal tracking-[-0.02em] italic">
+              <span className="font-quote font-normal tracking-[-0.02em] text-[#1E7A43] italic">
                 {settings.aboutTitle.split(" ").slice(1).join(" ")}
               </span>
             </h2>

@@ -8,7 +8,9 @@ export function BackToTop() {
 
   useEffect(() => {
     function onScroll() {
-      setVisible(window.scrollY > 400);
+      // Hide near the bottom, where the footer has its own back-to-top button.
+      const nearBottom = window.scrollY + window.innerHeight > document.documentElement.scrollHeight - 320;
+      setVisible(window.scrollY > 400 && !nearBottom);
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
