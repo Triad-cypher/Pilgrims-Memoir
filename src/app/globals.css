@@ -32,6 +32,8 @@
   --font-sans: var(--font-inter);
   --font-serif: var(--font-lora);
   --font-accent: var(--font-instrument-sans);
+  --font-quote: var(--font-instrument-serif);
+  --font-geist: var(--font-geist-sans);
 }
 
 html {
@@ -49,4 +51,159 @@ body {
 
 .prose-devotional strong {
   color: var(--color-ink);
+}
+
+/* ---------- Homepage hero (glass nav, 3D books, scrolling words) ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 10px 40px -12px rgba(15, 40, 25, 0.18);
+}
+
+.hero-btn {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.25s, box-shadow 0.35s;
+}
+.hero-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -12px rgba(15, 59, 38, 0.45);
+}
+.hero-btn .arr {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hero-btn:hover .arr {
+  transform: rotate(45deg);
+}
+
+.book-scene {
+  perspective: 1600px;
+  perspective-origin: 50% 35%;
+}
+.p3d {
+  transform-style: preserve-3d;
+}
+.book {
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  transform-style: preserve-3d;
+}
+.bk-f,
+.bk-b {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px 8px 8px 3px;
+  overflow: hidden;
+}
+.bk-f {
+  transform: translateZ(calc(var(--d) / 2));
+}
+.bk-f::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.35) 0,
+    rgba(255, 255, 255, 0.22) 2.5%,
+    rgba(0, 0, 0, 0.08) 5%,
+    transparent 10%,
+    transparent 72%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  pointer-events: none;
+}
+.bk-b {
+  transform: rotateY(180deg) translateZ(calc(var(--d) / 2));
+  background: var(--sp, #14221a);
+}
+.bk-s {
+  position: absolute;
+  top: 0;
+  left: calc(50% - var(--d) / 2);
+  width: var(--d);
+  height: 100%;
+  transform: rotateY(-90deg) translateZ(calc(var(--w) / 2));
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.08) 40%, rgba(0, 0, 0, 0.3)),
+    var(--sp, #14221a);
+  border-radius: 3px;
+}
+.bk-p {
+  position: absolute;
+  top: 4px;
+  left: calc(50% - var(--d) / 2 + 2px);
+  width: calc(var(--d) - 4px);
+  height: calc(100% - 8px);
+  transform: rotateY(90deg) translateZ(calc(var(--w) / 2 - 4px));
+  background: repeating-linear-gradient(90deg, #f4f0e4 0 2px, #dcd5c2 2px 3px);
+}
+
+.spin {
+  animation: book-spin 11s ease-in-out infinite alternate;
+}
+.spin-b {
+  animation: book-spin 13s ease-in-out -4s infinite alternate;
+}
+.spin-c {
+  animation: book-spin 12s ease-in-out -8s infinite alternate-reverse;
+}
+.float {
+  animation: book-float 7s ease-in-out infinite;
+}
+.float-b {
+  animation: book-float 8s ease-in-out -3s infinite;
+}
+@keyframes book-spin {
+  from {
+    transform: rotateY(-40deg) rotateX(6deg);
+  }
+  to {
+    transform: rotateY(22deg) rotateX(-3deg);
+  }
+}
+@keyframes book-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-18px);
+  }
+}
+
+.marquee {
+  animation: marquee 38s linear infinite;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin,
+  .spin-b,
+  .spin-c,
+  .float,
+  .float-b,
+  .marquee {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .hero-parallax {
+      animation: hero-parallax linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 900px;
+    }
+    @keyframes hero-parallax {
+      to {
+        transform: translateY(-140px) scale(0.96);
+        opacity: 0.25;
+      }
+    }
+  }
 }

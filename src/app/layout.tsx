@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat, Inter, Lora, Instrument_Sans } from "next/font/google";
+import { Montserrat, Inter, Lora, Instrument_Sans, Instrument_Serif, Geist } from "next/font/google";
 import { VisitTracker } from "@/components/site/VisitTracker";
 import "./globals.css";
 
@@ -31,6 +31,20 @@ const instrumentSans = Instrument_Sans({
   display: "swap",
 });
 
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
+  display: "swap",
+});
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Pilgrim's Memoirs",
   description:
@@ -41,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${montserrat.variable} ${inter.variable} ${lora.variable} ${instrumentSans.variable}`}
+      className={`${montserrat.variable} ${inter.variable} ${lora.variable} ${instrumentSans.variable} ${instrumentSerif.variable} ${geist.variable}`}
     >
       <body className="font-sans antialiased">
         <VisitTracker />

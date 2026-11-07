@@ -123,7 +123,6 @@ export function SettingsForm({ initial }: { initial: SettingsMap }) {
         <Field label="Hero Tag" value={values.heroTag} onChange={(v) => set("heroTag", v)} />
         <Field label="Hero Title" value={values.heroTitle} onChange={(v) => set("heroTitle", v)} />
         <Field label="Hero CTA Label" value={values.heroCtaLabel} onChange={(v) => set("heroCtaLabel", v)} />
-        <ImageField label="Hero Background Image" value={values.heroImageUrl} onChange={(v) => set("heroImageUrl", v)} />
       </Section>
 
       <Section title="Hero Bible Verse">
