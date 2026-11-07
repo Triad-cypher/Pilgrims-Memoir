@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { sendContactEmail } from "@/lib/mailer";
 
 const PHONE_PATTERN = /^[0-9+\-\s()]{7,20}$/;
-const INQUIRY_TYPES = ["GENERAL", "ORDER_BOOK"];
+const INQUIRY_TYPES = ["GENERAL", "ORDER_BOOK", "TESTIMONY"];
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);

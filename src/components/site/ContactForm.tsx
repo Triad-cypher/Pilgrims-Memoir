@@ -12,8 +12,9 @@ const labelClass = "text-[14px] font-medium";
 const PHONE_PATTERN = /^[0-9+\-\s()]{7,20}$/;
 
 const INQUIRY_TYPES = [
-  { value: "GENERAL", label: "General inquiry" },
-  { value: "ORDER_BOOK", label: "Order a book" },
+  { value: "GENERAL", label: "General inquiry", placeholder: "How can we help?" },
+  { value: "ORDER_BOOK", label: "Order a book", placeholder: 'I would like to order a copy of "Issue 2: The Great Transition".' },
+  { value: "TESTIMONY", label: "Share a testimony", placeholder: "Share how God has been at work in your life…" },
 ];
 
 export function ContactForm() {
@@ -193,7 +194,7 @@ export function ContactForm() {
               rows={5}
               value={form.message}
               onChange={(e) => set("message", e.target.value)}
-              placeholder={'I would like to order a copy of "Issue 2: The Great Transition".'}
+              placeholder={INQUIRY_TYPES.find((t) => t.value === form.inquiryType)?.placeholder}
               className={`${fieldClass} resize-y`}
             />
           </div>

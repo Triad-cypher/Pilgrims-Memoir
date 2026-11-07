@@ -5,6 +5,7 @@ const CONTACT_RECEIVER_EMAIL = process.env.CONTACT_RECEIVER_EMAIL || "pilgrimsme
 const INQUIRY_LABELS: Record<string, string> = {
   GENERAL: "General Inquiry",
   ORDER_BOOK: "Order a Book",
+  TESTIMONY: "Share a Testimony",
 };
 
 export interface ContactEmailPayload {
