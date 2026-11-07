@@ -95,8 +95,8 @@ export default async function HomePage() {
       {/* MID CTA */}
       <section className="bg-cream px-5 py-16 sm:px-8 sm:py-24">
         <div className="mx-auto max-w-[1280px]">
-          <div className="grid gap-10 lg:grid-cols-[2fr_1fr] lg:items-center">
-            <div className="text-center lg:text-left">
+          <div className="grid gap-10 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center lg:gap-x-0">
+            <div className="text-center lg:max-w-[clamp(376px,52.6vw,752px)] lg:text-left">
               <h2 className="font-geist text-[clamp(40px,5.6vw,80px)] leading-[0.95] font-medium tracking-[-0.055em] text-[#0F1A14]">
                 {accentTitle(settings.midTitle).map((part, i) =>
                   part.accent ? (
@@ -124,7 +124,7 @@ export default async function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="flex flex-col gap-5">
+            <div className="flex w-full flex-col gap-5 lg:mx-auto lg:max-w-[420px]">
               <figure className="relative m-0 flex flex-col gap-4 overflow-hidden rounded-2xl bg-[#0F3B26] p-6 text-[#F5F6F0]">
                 <svg aria-hidden="true" viewBox="0 0 200 200" className="absolute -top-8 -right-8 h-44 w-44 opacity-[0.12]">
                   <path d="M100 0v200M0 100h200M30 30l140 140M170 30L30 170" stroke="#E7D9A8" strokeWidth="2" />
