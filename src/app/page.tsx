@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, Star } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Star } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { HomeHero } from "@/components/site/HomeHero";
@@ -128,15 +128,23 @@ export default async function HomePage() {
               <div className="mt-7 flex flex-wrap justify-center gap-4 lg:justify-start">
                 <Link
                   href="/books"
-                  className="rounded-full bg-brand-100 px-7 py-3.5 font-accent text-[15px] font-bold text-brand-700"
+                  className="group hero-btn inline-flex items-center rounded-full bg-brand-100 px-7 py-3.5 font-accent text-[15px] font-bold text-brand-700 transition-colors duration-300 hover:bg-[#1E7A43] hover:text-white"
                 >
                   Explore Books
+                  <ArrowUpRight
+                    size={16}
+                    className="w-0 opacity-0 transition-all duration-300 group-hover:ml-2 group-hover:w-4 group-hover:opacity-100"
+                  />
                 </Link>
                 <Link
                   href="/devotionals"
-                  className="rounded-full px-7 py-3.5 font-accent text-[15px] font-bold text-ink-alt ring-1 ring-black/10"
+                  className="group hero-btn inline-flex items-center rounded-full px-7 py-3.5 font-accent text-[15px] font-bold text-ink-alt ring-1 ring-black/10 transition-colors duration-300 hover:bg-[#0F1A14] hover:text-white hover:ring-[#0F1A14]"
                 >
                   Monthly Devotionals
+                  <ArrowUpRight
+                    size={16}
+                    className="w-0 opacity-0 transition-all duration-300 group-hover:ml-2 group-hover:w-4 group-hover:opacity-100"
+                  />
                 </Link>
               </div>
             </div>
