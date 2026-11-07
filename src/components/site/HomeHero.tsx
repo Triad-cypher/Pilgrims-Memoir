@@ -150,8 +150,8 @@ export function HomeHero({
           </h1>
         </div>
 
-        <div className="relative z-[2] mt-8 flex md:mt-[clamp(-128px,-7.65vw,-34px)] w-full max-w-[1312px] flex-wrap items-end justify-between gap-6">
-          <div className="flex max-w-[348px] flex-[1_1_220px] flex-col gap-4 pb-2.5">
+        <div className="relative z-[2] mt-8 grid w-full max-w-[1312px] grid-cols-1 items-end gap-6 md:grid-cols-2 lg:mt-[clamp(-128px,-7.65vw,-34px)] lg:flex lg:justify-between">
+          <div className="flex max-w-[348px] flex-col gap-4 pb-2.5 md:order-2 lg:order-none lg:flex-[1_1_200px]">
             <p className="m-0 text-[16px] leading-[1.55] text-pretty text-[#233128]">{tagline}</p>
             <div className="flex flex-wrap gap-2.5">
               <Link
@@ -166,7 +166,7 @@ export function HomeHero({
             </div>
           </div>
 
-          <div className="book-scene relative flex h-[400px] w-full flex-[0_1_476px] justify-center max-sm:-my-10 max-sm:scale-[0.8]">
+          <div className="book-scene relative flex h-[400px] w-full justify-center max-sm:-my-10 max-sm:scale-[0.8] md:order-1 md:col-span-2 lg:order-none lg:flex-[0_1_476px]">
             <div
               aria-hidden="true"
               className="absolute bottom-[15px] left-1/2 h-[37px] w-[357px] max-w-[90%] -translate-x-1/2 rounded-full blur-[6px]"
@@ -195,7 +195,7 @@ export function HomeHero({
             </div>
           </div>
 
-          <figure className="glass m-0 flex max-w-[306px] flex-[1_1_220px] flex-col gap-3 rounded-[24px] px-[22px] py-5 max-sm:max-w-none">
+          <figure className="glass m-0 flex max-w-[306px] flex-col gap-3 rounded-[24px] px-[22px] py-5 max-sm:max-w-none md:order-3 md:justify-self-end lg:order-none lg:flex-[1_1_200px]">
             <svg width="24" height="19" viewBox="0 0 28 22" fill="none" aria-hidden="true">
               <path
                 d="M0 22V13C0 5.8 3.6 1.5 10.4 0l1.2 2.6C8 4 6.3 6.4 6 10h5v12H0zm16 0V13c0-7.2 3.6-11.5 10.4-13l1.2 2.6C24 4 22.3 6.4 22 10h5v12H16z"
@@ -215,9 +215,10 @@ export function HomeHero({
       </section>
 
       {marqueeItems.length > 0 && (
+        <div className="relative z-[3] -mt-[34px] -mb-12 overflow-hidden pt-6 pb-12">
         <div
           aria-label="What you will find"
-          className="relative z-[3] -mx-5 -mt-2.5 overflow-hidden bg-[#0F3B26] py-[22px] text-[#F5F6F0] shadow-[0_20px_40px_-24px_rgba(15,59,38,.6)]"
+          className="relative -mx-5 overflow-hidden bg-[#0F3B26] py-[22px] text-[#F5F6F0] shadow-[0_20px_40px_-24px_rgba(15,59,38,.6)]"
           style={{ transform: "rotate(-1.2deg)" }}
         >
           <div className="marquee flex w-max items-center gap-10 pl-10 font-quote text-[clamp(24px,2.7vw,37px)] whitespace-nowrap italic">
@@ -232,6 +233,7 @@ export function HomeHero({
               ))
             )}
           </div>
+        </div>
         </div>
       )}
     </>

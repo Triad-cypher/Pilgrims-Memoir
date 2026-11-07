@@ -270,7 +270,8 @@ body {
     .reveal-sections > div > section {
       animation: reveal linear both;
       animation-timeline: view();
-      animation-range: entry 0% cover 30%;
+      /* Fully revealed after a fixed 240px of scrolling, so tall blocks don't stay half-faded on phones. */
+      animation-range: entry 0% entry 240px;
     }
     @keyframes reveal {
       from {
