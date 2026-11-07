@@ -9,7 +9,7 @@ export default function PrivacyPage() {
         <h1 className="font-display text-4xl font-bold text-ink">Privacy Policy</h1>
         <div className="mt-6 space-y-4 text-sm leading-relaxed text-ink-soft/80">
           <p>
-            Pilgrim&apos;s Memoirs respects your privacy. Information submitted through our contact form or comments
+            A Pilgrim&apos;s Memoirs respects your privacy. Information submitted through our contact form or comments
             (such as your name and email) is used only to respond to you and to moderate community discussion — it
             is never sold or shared with third parties.
           </p>

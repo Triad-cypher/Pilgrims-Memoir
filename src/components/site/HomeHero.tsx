@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Book3D } from "./Book3D";
+import { Citation } from "./Citation";
 
 interface HeroBook {
   src: string;
@@ -140,7 +141,7 @@ export function HomeHero({
           </p>
           <h1 className="m-0 flex flex-col items-center font-normal">
             {lead && (
-              <span className="text-[clamp(19px,2vw,29px)] font-medium tracking-[-0.02em] text-[#234A33]">
+              <span className="text-[clamp(22px,2.4vw,34px)] font-medium tracking-[-0.02em] text-[#234A33]">
                 {lead}
               </span>
             )}
@@ -207,7 +208,7 @@ export function HomeHero({
             </blockquote>
             {cite && (
               <figcaption className="text-[12px] font-medium tracking-[0.06em] text-[#3E4A43] uppercase">
-                {cite}
+                <Citation text={cite} />
               </figcaption>
             )}
           </figure>

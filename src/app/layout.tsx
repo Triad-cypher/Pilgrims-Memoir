@@ -46,7 +46,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Pilgrim's Memoirs",
+  title: "A Pilgrim's Memoirs",
   description:
     "Christian books, articles, and monthly devotionals to nourish your faith and encourage your walk with God.",
 };

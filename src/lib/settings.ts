@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 export const DEFAULT_SETTINGS = {
   heroTag: "WALKING THE JOURNEY OF FAITH",
-  heroTitle: "The Pilgrim's Memoirs.",
+  heroTitle: "A Pilgrim's Memoirs",
   heroCtaLabel: "Explore",
   heroVerseText: "Now faith is the substance of things hoped for, the evidence of things not seen. [Heb. 11: 1 (NKJV)]",
   heroImageUrl: "/images/figma/hero-bg.png",

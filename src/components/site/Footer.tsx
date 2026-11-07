@@ -90,14 +90,14 @@ export function Footer({ tagline }: { tagline?: string }) {
 
         <p
           aria-hidden="true"
-          className="m-0 text-[clamp(44px,13.5vw,210px)] leading-[0.85] font-medium tracking-[-0.05em] whitespace-nowrap text-[#F5F6F0]"
+          className="m-0 text-[clamp(36px,12vw,186px)] leading-[0.85] font-medium tracking-[-0.05em] whitespace-nowrap text-[#F5F6F0]"
         >
-          Pilgrim&apos;s{" "}
+          A Pilgrim&apos;s{" "}
           <span className="font-quote font-normal tracking-[-0.03em] text-[#E7D9A8] italic">Memoirs</span>
         </p>
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#F5F6F0]/14 pt-6 text-[14px] text-[#F5F6F0]/70">
-          <span>© {new Date().getFullYear()} Pilgrim&apos;s Memoirs. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} A Pilgrim&apos;s Memoirs. All rights reserved.</span>
           <span>Built with love for the Christian community.</span>
           <a
             href="#"

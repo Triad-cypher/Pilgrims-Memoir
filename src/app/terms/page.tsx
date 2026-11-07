@@ -9,7 +9,7 @@ export default function TermsPage() {
         <h1 className="font-display text-4xl font-bold text-ink">Terms of Use</h1>
         <div className="mt-6 space-y-4 text-sm leading-relaxed text-ink-soft/80">
           <p>
-            The books, articles, and devotionals published on Pilgrim&apos;s Memoirs are provided for personal
+            The books, articles, and devotionals published on A Pilgrim&apos;s Memoirs are provided for personal
             edification and study. Free copies may be shared as-is, in full, with attribution to the author.
           </p>
           <p>

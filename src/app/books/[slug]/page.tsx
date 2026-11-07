@@ -5,6 +5,7 @@ import { ArrowLeft, Download, Eye } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Book3D } from "@/components/site/Book3D";
+import { Citation } from "@/components/site/Citation";
 import { CommentsSection } from "@/components/site/CommentsSection";
 import { RichText } from "@/components/site/RichText";
 import { ShareButton } from "@/components/site/ShareButton";
@@ -129,7 +130,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ slu
                   </blockquote>
                   {quote.cite && (
                     <figcaption className="text-[13px] font-medium tracking-[0.1em] text-[#E7D9A8] uppercase">
-                      {quote.cite}
+                      <Citation text={quote.cite} />
                     </figcaption>
                   )}
                 </figure>

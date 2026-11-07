@@ -47,7 +47,7 @@ export async function sendContactEmail(payload: ContactEmailPayload) {
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: CONTACT_RECEIVER_EMAIL,
     replyTo: payload.email,
-    subject: `[Pilgrim's Memoirs] New ${inquiryLabel} from ${payload.name}`,
+    subject: `[A Pilgrim's Memoirs] New ${inquiryLabel} from ${payload.name}`,
     text: [
       `Name: ${payload.name}`,
       `Email: ${payload.email}`,
