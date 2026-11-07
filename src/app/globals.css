@@ -207,3 +207,20 @@ body {
     }
   }
 }
+
+/* Shrink the hero contents on short desktop windows (e.g. laptops with 125–150% display scaling) so it fits on screen. */
+@media (min-width: 768px) and (max-height: 760px) {
+  .hero-fit {
+    zoom: 0.88;
+  }
+}
+@media (min-width: 768px) and (max-height: 660px) {
+  .hero-fit {
+    zoom: 0.8;
+  }
+}
+@media (min-width: 768px) and (max-height: 580px) {
+  .hero-fit {
+    zoom: 0.72;
+  }
+}

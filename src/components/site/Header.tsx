@@ -13,19 +13,6 @@ const NAV_LINKS = [
   { href: "/devotionals", label: "Monthly Devotionals" },
 ];
 
-function LeafMark({ size = 32 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <circle cx="16" cy="16" r="16" fill="#0F3B26" />
-      <path
-        d="M23 7.5c-5.4.4-10.2 4.6-11.8 11l-1.2 4.6 1.8-1.3c.9-2.5 2.4-4.3 4.3-5.3 3.4-1.1 6-4.8 6.9-9z"
-        fill="#E7D9A8"
-      />
-      <path d="M10 24.5l6.5-7.6" stroke="#0F3B26" strokeWidth="1.3" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 // Floating glass pill used over the homepage hero.
 function GlassHeader() {
   const [open, setOpen] = useState(false);
@@ -36,19 +23,19 @@ function GlassHeader() {
       <nav aria-label="Main" className="glass mx-auto max-w-[1312px] rounded-[28px] py-2 pr-2 pl-[18px]">
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="flex min-h-11 items-center gap-2.5 text-[#0F1A14]">
-            <LeafMark />
-            <span className="text-[17px] font-semibold tracking-[-0.02em]">
-              Pilgrim&apos;s <span className="font-quote text-[20px] font-normal italic">Memoirs</span>
+            <Image src="/images/logo-mark.png" alt="" width={29} height={30} className="h-[30px] w-auto" priority />
+            <span className="text-[16px] font-semibold tracking-[-0.02em]">
+              Pilgrim&apos;s <span className="font-quote text-[19px] font-normal italic">Memoirs</span>
             </span>
           </Link>
 
-          <div className="hidden items-center gap-0.5 text-[15px] lg:flex">
+          <div className="hidden items-center gap-0.5 text-[14px] lg:flex">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
                 aria-current={pathname === link.href ? "page" : undefined}
-                className={`rounded-full px-[18px] py-3 transition ${
+                className={`rounded-full px-4 py-2.5 transition ${
                   pathname === link.href
                     ? "bg-[#0F1A14] text-[#F5F6F0]"
                     : "text-[#3E4A43] hover:bg-[#0F1A14]/6 hover:text-[#0F1A14]"
@@ -62,10 +49,10 @@ function GlassHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/contact"
-              className="hero-btn hidden min-h-11 items-center gap-2.5 rounded-full bg-[#1E7A43] py-1.5 pr-1.5 pl-5 text-[15px] font-medium text-white sm:flex"
+              className="hero-btn hidden min-h-11 items-center gap-2.5 rounded-full bg-[#1E7A43] py-1.5 pr-1.5 pl-[18px] text-[14px] font-medium text-white sm:flex"
             >
               Contact
-              <span className="arr grid h-[34px] w-[34px] place-items-center rounded-full bg-white text-[#1E7A43]">
+              <span className="arr grid h-8 w-8 place-items-center rounded-full bg-white text-[#1E7A43]">
                 <ArrowUpRight size={14} />
               </span>
             </Link>
