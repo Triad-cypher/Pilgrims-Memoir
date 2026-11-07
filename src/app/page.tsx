@@ -45,7 +45,7 @@ export default async function HomePage() {
   ]);
 
   const aboutParagraphs = settings.aboutBody.split("\n\n");
-  const bannerParagraphs = settings.bannerBody.split("\n\n");
+  // const bannerParagraphs = settings.bannerBody.split("\n\n");
   const bannerTags = settings.bannerTags.split(",").map((t) => t.trim()).filter(Boolean);
 
   return (
@@ -146,7 +146,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* GREEN BANNER */}
+      {/* GREEN BANNER — hidden for now. To bring it back, remove this opening comment and the closing one
+          after the section, and uncomment bannerParagraphs above.
       <section className="px-5 py-16 sm:px-8 sm:py-24">
         <div className="mx-auto max-w-[1280px]">
           <div
@@ -179,6 +180,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      */}
 
       {/* RESOURCES */}
       <section className="px-5 py-16 sm:px-8 sm:py-24">
