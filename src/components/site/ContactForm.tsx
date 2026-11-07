@@ -1,21 +1,34 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowUpRight, Check } from "lucide-react";
 import { CountrySelect } from "./CountrySelect";
+import {
+  INQUIRY_TYPES,
+  validateContact,
+  validateField,
+  type ContactErrors,
+  type ContactFields,
+} from "@/lib/contactValidation";
 
 const fieldClass =
   "w-full rounded-lg bg-[#F4F4F5] px-4 py-4 text-sm text-black outline-none placeholder:text-[#71717A] focus:ring-2 focus:ring-brand-400";
+const invalidClass = "ring-2 ring-rose-400 focus:ring-rose-400";
 const labelClass = "text-[14px] font-medium";
 
-const PHONE_PATTERN = /^[0-9+\-\s()]{7,20}$/;
+const MESSAGE_PLACEHOLDERS: Record<string, string> = {
+  GENERAL: "How can we help?",
+  ORDER_BOOK: 'I would like to order a copy of "Issue 2: The Great Transition".',
+  TESTIMONY: "Share how God has been at work in your life…",
+};
 
-const INQUIRY_TYPES = [
-  { value: "GENERAL", label: "General inquiry", placeholder: "How can we help?" },
-  { value: "ORDER_BOOK", label: "Order a book", placeholder: 'I would like to order a copy of "Issue 2: The Great Transition".' },
-  { value: "TESTIMONY", label: "Share a testimony", placeholder: "Share how God has been at work in your life…" },
-];
+const FIELD_IDS: Record<keyof ContactFields, string> = {
+  name: "f-name",
+  email: "f-email",
+  phone: "f-phone",
+  message: "f-msg",
+};
 
 export function ContactForm() {
   const searchParams = useSearchParams();
@@ -27,8 +40,11 @@ export function ContactForm() {
     inquiryType: "GENERAL",
     message: "",
   });
-  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<ContactErrors>({});
+  const [honeypot, setHoneypot] = useState("");
+  const startedAt = useRef(Date.now());
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
+  const [serverError, setServerError] = useState<string | null>(null);
   const [sentName, setSentName] = useState("");
 
   useEffect(() => {
@@ -46,36 +62,64 @@ export function ContactForm() {
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
+    // Once a field has an error, re-check as the visitor types so it clears when fixed.
+    if (key in FIELD_IDS && errors[key as keyof ContactFields]) {
+      setErrors((e) => ({ ...e, [key]: validateField(key as keyof ContactFields, value) }));
+    }
   }
 
-  function validatePhone(value: string) {
-    if (!value) {
-      setPhoneError(null);
-      return true;
-    }
-    if (!PHONE_PATTERN.test(value)) {
-      setPhoneError("Phone number can only contain digits, spaces, +, - and ().");
-      return false;
-    }
-    setPhoneError(null);
-    return true;
+  function checkField(key: keyof ContactFields) {
+    setErrors((e) => ({ ...e, [key]: validateField(key, form[key]) }));
+  }
+
+  function fieldProps(key: keyof ContactFields) {
+    const error = errors[key];
+    return {
+      id: FIELD_IDS[key],
+      value: form[key],
+      onBlur: () => checkField(key),
+      "aria-invalid": error ? true : undefined,
+      "aria-describedby": error ? `${FIELD_IDS[key]}-err` : undefined,
+      className: `${fieldClass} ${error ? invalidClass : ""}`,
+    };
+  }
+
+  function errorText(key: keyof ContactFields) {
+    const error = errors[key];
+    return error ? (
+      <p id={`${FIELD_IDS[key]}-err`} className="m-0 text-xs text-rose-600">
+        {error}
+      </p>
+    ) : null;
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!validatePhone(form.phone)) return;
+    setServerError(null);
+    const found = validateContact(form);
+    setErrors(found);
+    const firstInvalid = (Object.keys(FIELD_IDS) as (keyof ContactFields)[]).find((k) => found[k]);
+    if (firstInvalid) {
+      document.getElementById(FIELD_IDS[firstInvalid])?.focus();
+      return;
+    }
 
     setStatus("loading");
     const res = await fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, website: honeypot, startedAt: startedAt.current }),
     });
     if (res.ok) {
       setSentName(form.name.trim().split(/\s+/)[0] ?? "");
       setStatus("sent");
       setForm({ name: "", email: "", phone: "", country: "", inquiryType: "GENERAL", message: "" });
+      setErrors({});
+      startedAt.current = Date.now();
     } else {
+      const data = await res.json().catch(() => null);
+      if (data?.errors) setErrors(data.errors);
+      setServerError(data?.error ?? "Something went wrong. Please try again.");
       setStatus("error");
     }
   }
@@ -106,49 +150,58 @@ export function ContactForm() {
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-[18px]">
+          {/* Honeypot: hidden from people (and screen readers); bots that fill every field get filtered out. */}
+          <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+            <label htmlFor="f-website">Website</label>
+            <input
+              id="f-website"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+          </div>
+
           <div className="grid grid-cols-[repeat(auto-fit,minmax(min(220px,100%),1fr))] gap-[18px]">
             <div className="flex flex-col gap-2">
               <label htmlFor="f-name" className={labelClass}>
                 Name
               </label>
               <input
-                id="f-name"
-                required
-                value={form.name}
+                {...fieldProps("name")}
+                autoComplete="name"
                 onChange={(e) => set("name", e.target.value)}
                 placeholder="Your full name"
-                className={fieldClass}
               />
+              {errorText("name")}
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="f-email" className={labelClass}>
                 Email
               </label>
               <input
-                id="f-email"
-                required
+                {...fieldProps("email")}
                 type="email"
-                value={form.email}
+                autoComplete="email"
                 onChange={(e) => set("email", e.target.value)}
                 placeholder="you@example.com"
-                className={fieldClass}
               />
+              {errorText("email")}
             </div>
             <div className="flex flex-col gap-2">
               <label htmlFor="f-phone" className={labelClass}>
                 Phone number
               </label>
               <input
-                id="f-phone"
-                value={form.phone}
-                onChange={(e) => set("phone", e.target.value)}
-                onBlur={(e) => validatePhone(e.target.value)}
+                {...fieldProps("phone")}
                 inputMode="tel"
+                autoComplete="tel"
+                onChange={(e) => set("phone", e.target.value)}
                 placeholder="+254 712 345 678"
-                className={fieldClass}
               />
-              {phoneError && <p className="m-0 text-xs text-rose-600">{phoneError}</p>}
+              {errorText("phone")}
             </div>
             <div className="flex flex-col gap-2">
               <span className={labelClass}>Country</span>
@@ -189,14 +242,13 @@ export function ContactForm() {
               Message
             </label>
             <textarea
-              id="f-msg"
-              required
+              {...fieldProps("message")}
               rows={5}
-              value={form.message}
               onChange={(e) => set("message", e.target.value)}
-              placeholder={INQUIRY_TYPES.find((t) => t.value === form.inquiryType)?.placeholder}
-              className={`${fieldClass} resize-y`}
+              placeholder={MESSAGE_PLACEHOLDERS[form.inquiryType]}
+              className={`${fieldProps("message").className} resize-y`}
             />
+            {errorText("message")}
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -210,7 +262,7 @@ export function ContactForm() {
                 <ArrowUpRight size={16} />
               </span>
             </button>
-            {status === "error" && <span className="text-sm text-rose-600">Something went wrong. Please try again.</span>}
+            {status === "error" && serverError && <span className="text-sm text-rose-600">{serverError}</span>}
           </div>
         </form>
       )}

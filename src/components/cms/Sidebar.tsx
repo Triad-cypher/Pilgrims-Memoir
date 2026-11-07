@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Archive, BookCheck, Image as ImageIcon, LayoutDashboard, LogOut, MessageCircle, Settings } from "lucide-react";
+import { Archive, BookCheck, Image as ImageIcon, Inbox, LayoutDashboard, LogOut, MessageCircle, Settings } from "lucide-react";
 
 const NAV = [
   { href: "/cms", label: "Dashboard", icon: LayoutDashboard },
   { href: "/cms/media", label: "Media", icon: ImageIcon },
   { href: "/cms/resources", label: "Resources & Posts", icon: Archive },
   { href: "/cms/comments", label: "Comments", icon: MessageCircle },
+  { href: "/cms/messages", label: "Messages", icon: Inbox },
   { href: "/cms/settings", label: "Settings", icon: Settings },
 ];
 
