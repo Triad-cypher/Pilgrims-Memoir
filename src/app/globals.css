@@ -207,3 +207,76 @@ body {
   }
 }
 
+
+/* ---------- Book cards, form fields, contact cards ---------- */
+.tilt .book {
+  transform: rotateY(-28deg) rotateX(5deg);
+  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tilt:hover .book {
+  transform: rotateY(10deg) rotateX(-2deg) translateY(-10px);
+}
+.fan .book {
+  transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.fan:hover .b1 {
+  transform: translateX(-150px) rotateZ(-10deg) rotateY(-20deg) !important;
+}
+.fan:hover .b3 {
+  transform: translateX(150px) rotateZ(10deg) rotateY(20deg) !important;
+}
+.field {
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.field:focus,
+.field:focus-within {
+  outline: none;
+  border-color: #1e7a43;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(30, 122, 67, 0.15);
+}
+.glass-d {
+  background: rgba(20, 12, 6, 0.32);
+  backdrop-filter: blur(18px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+.lift {
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.lift:hover {
+  transform: translateY(-4px);
+}
+.zoom img {
+  transition: transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.zoom:hover img {
+  transform: scale(1.05);
+}
+
+/* ---------- Page entrance + scroll reveal (all public pages) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .in {
+    animation: page-in 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  @keyframes page-in {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+  }
+  @supports (animation-timeline: view()) {
+    .rv,
+    .reveal-sections > section,
+    .reveal-sections > div > section {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(56px);
+      }
+    }
+  }
+}

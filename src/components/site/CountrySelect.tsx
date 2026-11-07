@@ -7,7 +7,16 @@ import { COUNTRIES, countryFlag } from "@/lib/countries";
 const fieldClass =
   "mt-2 w-full rounded-lg bg-[#F4F4F5] px-4 py-4 text-sm text-black outline-none placeholder:text-[#71717A] focus:ring-2 focus:ring-brand-400";
 
-export function CountrySelect({ value, onChange }: { value: string; onChange: (name: string) => void }) {
+export function CountrySelect({
+  value,
+  onChange,
+  fieldClassName = fieldClass,
+}: {
+  value: string;
+  onChange: (name: string) => void;
+  /** Overrides the input/button styling so the selector can match its form. */
+  fieldClassName?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,14 +63,14 @@ export function CountrySelect({ value, onChange }: { value: string; onChange: (n
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type to search countries..."
-            className={`${fieldClass} pl-10`}
+            className={`${fieldClassName} pl-10`}
           />
         </div>
       ) : (
         <button
           type="button"
           onClick={openDropdown}
-          className={`${fieldClass} flex items-center justify-between pr-10 text-left`}
+          className={`${fieldClassName} flex items-center justify-between pr-10 text-left`}
         >
           <span className={selected ? "text-black" : "text-[#71717A]"}>
             {selected ? `${countryFlag(selected.code)} ${selected.name} (${selected.dial})` : "Select your country..."}

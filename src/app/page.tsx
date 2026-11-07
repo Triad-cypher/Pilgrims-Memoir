@@ -49,7 +49,7 @@ export default async function HomePage() {
   const bannerTags = settings.bannerTags.split(",").map((t) => t.trim()).filter(Boolean);
 
   return (
-    <div className="overflow-x-clip">
+    <div className="reveal-sections overflow-x-clip">
       <Header glass />
       <HomeHero
         tag={settings.heroTag}

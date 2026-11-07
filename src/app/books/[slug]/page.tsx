@@ -32,7 +32,7 @@ export default async function BookDetailPage({ params }: { params: Promise<{ slu
   ]);
 
   return (
-    <div>
+    <div className="reveal-sections">
       <Header />
 
       <section className="px-5 py-10 sm:px-8">

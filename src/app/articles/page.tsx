@@ -31,7 +31,7 @@ export default async function ArticlesPage({
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <div className="bg-white">
+    <div className="reveal-sections bg-white">
       <Header />
 
       <section className="px-5 pt-20 pb-12 sm:px-8">

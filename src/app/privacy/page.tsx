@@ -3,7 +3,7 @@ import { Footer } from "@/components/site/Footer";
 
 export default function PrivacyPage() {
   return (
-    <div>
+    <div className="reveal-sections">
       <Header />
       <section className="mx-auto max-w-3xl px-5 py-16 sm:px-8">
         <h1 className="font-display text-4xl font-bold text-ink">Privacy Policy</h1>

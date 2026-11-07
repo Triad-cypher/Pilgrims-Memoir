@@ -10,71 +10,97 @@ export const dynamic = "force-dynamic";
 
 export default async function ContactPage() {
   const settings = await getSettings();
+  const headingWords = settings.contactHeading.trim().split(/\s+/);
+  const headingLast = headingWords.length > 1 ? headingWords.pop() : null;
 
   return (
-    <div className="bg-white">
-      <Header />
+    <div className="overflow-x-clip bg-[#F5F6F0] font-geist text-[#0F1A14]">
+      <Header glass />
 
-      <section className="px-5 pt-10 pb-20 sm:px-8">
-        <div className="mx-auto max-w-[1280px]">
-          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-start">
-            <div>
-              <span className="inline-flex rounded-full bg-[#F4F4F5] px-4 py-2 text-xs font-semibold text-[#09090B]">
-                {settings.contactSubheading}
-              </span>
-              <h1 className="mt-4 font-sans text-5xl font-bold leading-none text-black sm:text-6xl lg:text-[80px]">
-                {settings.contactHeading}
-              </h1>
-            </div>
-            <p className="max-w-sm pt-4 text-base text-[#71717A] lg:pt-16">
-              Have a question about a book, a devotional, or want to share how a piece touched you? We would love
-              to hear from you.
-            </p>
-          </div>
+      {/* HEADER */}
+      <section className="mx-auto flex max-w-[1312px] flex-wrap items-end justify-between gap-8 px-5 pt-[clamp(64px,7vw,100px)] pb-12 sm:px-[clamp(20px,4vw,48px)]">
+        <div className="in flex flex-col gap-6">
+          <p className="m-0 inline-flex items-center gap-2.5 text-[13px] font-medium tracking-[0.1em] text-[#3E4A43] uppercase">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[#1E7A43]" />
+            {settings.contactSubheading}
+          </p>
+          <h1 className="m-0 text-[clamp(64px,10vw,160px)] leading-[0.88] font-medium tracking-[-0.06em]">
+            {headingWords.join(" ")}
+            {headingLast && (
+              <>
+                {" "}
+                <span className="font-quote font-normal tracking-[-0.03em] text-[#1E7A43] italic">{headingLast}</span>
+              </>
+            )}
+          </h1>
+        </div>
+        <p
+          className="in m-0 max-w-[420px] text-[19px] leading-[1.6] text-pretty text-[#36423B]"
+          style={{ animationDelay: ".1s" }}
+        >
+          Have a question about a book, a devotional, or want to share how a piece touched you? We would love to hear
+          from you.
+        </p>
+      </section>
 
-          <div className="mt-12 grid gap-10 lg:grid-cols-[1.45fr_1fr]">
-            <Suspense>
-              <ContactForm />
-            </Suspense>
-            <div
-              className="relative aspect-square w-full overflow-hidden rounded-3xl p-6 lg:aspect-auto"
-              style={{ minHeight: 400 }}
+      {/* FORM + IMAGE */}
+      <section
+        aria-label="Write to us"
+        className="mx-auto flex max-w-[1312px] flex-wrap items-stretch gap-5 px-5 sm:px-[clamp(20px,4vw,48px)]"
+      >
+        <Suspense>
+          <ContactForm />
+        </Suspense>
+
+        <div className="rv zoom relative flex min-h-[640px] flex-[1_1_440px] flex-col justify-between overflow-hidden rounded-[32px] bg-[#B86A3A] p-5 text-white">
+          <Image
+            src={settings.contactImageUrl}
+            alt="A winding road through a desert valley at sunset"
+            fill
+            sizes="(min-width: 1024px) 45vw, 100vw"
+            className="object-cover"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              background: "linear-gradient(180deg, rgba(20,10,4,.15) 0%, rgba(20,10,4,0) 35%, rgba(20,10,4,.55) 100%)",
+            }}
+          />
+          <span className="glass-d relative self-start rounded-full px-3.5 py-2 text-[12px] font-semibold tracking-[0.1em] uppercase">
+            Your journey
+          </span>
+          <div className="relative flex flex-col gap-3">
+            <p className="m-0 mb-2 text-[13px] font-semibold tracking-[0.1em] text-white/85 uppercase">Contacts</p>
+            <a
+              href={`mailto:${settings.contactEmail}`}
+              className="glass-d lift flex items-center gap-4 rounded-[22px] p-4 text-white"
             >
-              <Image src={settings.contactImageUrl} alt="Your journey" fill className="object-cover" />
-              <span className="relative inline-flex rounded-full bg-white/25 px-4 py-2 text-xs font-semibold text-white backdrop-blur">
-                Your Journey
+              <span aria-hidden="true" className="grid h-12 w-12 flex-none place-items-center rounded-full bg-white text-[#0F1A14]">
+                <Mail size={20} strokeWidth={1.7} />
               </span>
-            </div>
-          </div>
-
-          <div className="mt-20 grid gap-10 sm:grid-cols-3">
-            <div className="flex flex-col gap-6">
-              <span className="flex h-[52px] w-14 items-center justify-center rounded-full bg-cream-dark">
-                <Mail size={20} />
+              <span className="flex min-w-0 flex-col gap-0.5">
+                <span className="text-[13px] text-white/80">Email</span>
+                <span className="text-[18px] font-semibold [overflow-wrap:anywhere]">{settings.contactEmail}</span>
               </span>
-              <div>
-                <p className="text-lg font-bold text-black">Email</p>
-                <p className="mt-2 text-sm text-[#71717A]">{settings.contactEmail}</p>
-              </div>
-            </div>
-            <div className="flex flex-col gap-6">
-              <span className="flex h-[52px] w-14 items-center justify-center rounded-full bg-cream-dark">
-                <Phone size={20} />
+            </a>
+            <a
+              href={`tel:${settings.contactPhone.replace(/[^\d+]/g, "")}`}
+              className="glass-d lift flex items-center gap-4 rounded-[22px] p-4 text-white"
+            >
+              <span aria-hidden="true" className="grid h-12 w-12 flex-none place-items-center rounded-full bg-white text-[#0F1A14]">
+                <Phone size={20} strokeWidth={1.7} />
               </span>
-              <div>
-                <p className="text-lg font-bold text-black">Call &amp; WhatsApp</p>
-                <p className="mt-2 text-sm text-[#71717A]">{settings.contactPhone}</p>
-              </div>
-            </div>
-            <div className="flex flex-col justify-center gap-4">
-              <span className="inline-flex w-fit rounded-full bg-[#F4F4F5] px-4 py-2 text-xs font-semibold text-[#09090B]">
-                Contacts
+              <span className="flex flex-col gap-0.5">
+                <span className="text-[13px] text-white/80">Call &amp; WhatsApp</span>
+                <span className="text-[18px] font-semibold">{settings.contactPhone}</span>
               </span>
-              <p className="font-sans text-4xl font-bold leading-none text-black sm:text-5xl">Write to us</p>
-            </div>
+            </a>
           </div>
         </div>
       </section>
+
+      <div className="h-[clamp(110px,12vw,160px)]" />
 
       <Footer tagline={settings.footerTagline} />
     </div>

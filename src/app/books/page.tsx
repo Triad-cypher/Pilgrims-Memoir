@@ -1,18 +1,46 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { ResourceCard } from "@/components/site/ResourceCard";
+import { Book3D } from "@/components/site/Book3D";
 import { Pagination } from "@/components/site/Pagination";
 import { LiveSearchBar } from "@/components/site/LiveSearchBar";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
-import { htmlToParagraphs } from "@/lib/text";
+import { stripHtml } from "@/lib/text";
 
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 6;
+
+// Upright, border-trimmed copies of the CMS cover art (the uploaded covers sit on a grey canvas,
+// which doesn't work on a 3D book). Books not listed here fall back to their CMS cover image.
+const TRIMMED_COVERS = new Set([
+  "issue-1-a-perfect-and-excellent-life",
+  "issue-2-the-great-transition",
+  "issue-3-the-cross-of-jesus-christ",
+]);
+
+const CARD_THEMES = [
+  { bg: "radial-gradient(circle at 50% 40%, #DCE2EE, #C5CEE0 70%)", spine: "#0B1B33", dot: "#2B4C8C" },
+  { bg: "radial-gradient(circle at 50% 40%, #DCEBD6, #C9DDC2 70%)", spine: "#16261B", dot: "#1E7A43" },
+  { bg: "radial-gradient(circle at 50% 40%, #F6E7C9, #E9DDC3 70%)", spine: "#3A1F0E", dot: "#B4532A" },
+];
+
+function coverFor(book: { slug: string; coverImageUrl: string | null }) {
+  if (TRIMMED_COVERS.has(book.slug)) return `/images/covers/${book.slug}.jpg`;
+  return book.coverImageUrl;
+}
+
+/** "Issue 2: The Great Transition" → 2 */
+function issueNumberOf(book: { title: string; issueNumber: string | null }) {
+  const n = Number(book.issueNumber ?? book.title.match(/^Issue\s+(\d+)/i)?.[1]);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function readMinutes(body: string) {
+  return Math.max(1, Math.round(stripHtml(body).split(/\s+/).filter(Boolean).length / 200));
+}
 
 export default async function BooksPage({
   searchParams,
@@ -22,156 +50,168 @@ export default async function BooksPage({
   const params = await searchParams;
   const page = Math.max(1, Number(params.page ?? "1") || 1);
   const q = params.q?.trim() ?? "";
-  const sort = params.sort === "oldest" ? "asc" : "desc";
-
-  const featured = q
-    ? null
-    : await prisma.resource.findFirst({
-        where: { type: "BOOK", status: "PUBLISHED", visibility: "PUBLIC", featured: true },
-      });
+  const orderBy =
+    params.sort === "title"
+      ? { title: "asc" as const }
+      : { createdAt: params.sort === "oldest" ? ("asc" as const) : ("desc" as const) };
 
   const bookWhere = {
     type: "BOOK",
     status: "PUBLISHED",
     visibility: "PUBLIC",
-    ...(q ? {} : { featured: false }),
-    ...(q ? { title: { contains: q, mode: "insensitive" as const } } : {}),
+    ...(q
+      ? {
+          OR: [
+            { title: { contains: q, mode: "insensitive" as const } },
+            { excerpt: { contains: q, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
   };
 
   const [total, books] = await Promise.all([
     prisma.resource.count({ where: bookWhere }),
-    prisma.resource.findMany({
-      where: bookWhere,
-      orderBy: { createdAt: sort },
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-    }),
+    prisma.resource.findMany({ where: bookWhere, orderBy, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const countLabel = `${total} ${total === 1 ? "publication" : "publications"}`;
 
   return (
-    <div className="bg-white">
-      <Header />
+    <div className="overflow-x-clip bg-[#F5F6F0] font-geist text-[#0F1A14]">
+      <Header glass />
 
-      <section className="px-5 pt-20 pb-12 sm:px-8">
-        <div className="mx-auto max-w-[1280px]">
-          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-start">
-            <h1 className="font-display text-5xl font-extrabold leading-tight text-[#111111] sm:text-6xl lg:text-[80px]">
-              Books &amp;
-              <br />
-              Publications
-            </h1>
-            <p className="max-w-sm pt-4 text-base text-[#707070]">
-              Books and publications for the Christian journey. These resources offer deeper biblical teaching,
-              scriptural insights, and practical studies for anyone wanting to walk closer with God.
-            </p>
-          </div>
+      {/* HEADER */}
+      <section className="mx-auto flex max-w-[1312px] flex-wrap items-center justify-between gap-10 px-5 pt-[clamp(64px,7vw,104px)] pb-12 sm:px-[clamp(20px,4vw,48px)]">
+        <div className="in flex flex-[1_1_520px] flex-col gap-7">
+          <p className="m-0 inline-flex items-center gap-2.5 text-[13px] font-medium tracking-[0.1em] text-[#3E4A43] uppercase">
+            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[#1E7A43]" />
+            The library
+          </p>
+          <h1 className="m-0 text-[clamp(56px,8.6vw,136px)] leading-[0.9] font-medium tracking-[-0.055em]">
+            Books <span className="font-quote font-normal text-[#1E7A43] italic">&amp;</span>
+            <br />
+            Publications
+          </h1>
+          <p className="m-0 max-w-[520px] text-[19px] leading-[1.6] text-pretty text-[#36423B]">
+            Books and publications for the Christian journey. These resources offer deeper biblical teaching,
+            scriptural insights, and practical studies for anyone wanting to walk closer with God.
+          </p>
         </div>
-      </section>
 
-      <section className="bg-white px-5 pt-10 pb-20 sm:px-8">
-        <div className="mx-auto max-w-[1200px]">
-          <LiveSearchBar basePath="/books" initialQuery={q} initialSort={params.sort ?? "newest"} />
-
-          {featured && (
-            <div className="mt-16 grid gap-12 lg:grid-cols-2">
-              <Link
-                href={`/books/${featured.slug}`}
-                className="group relative flex aspect-[3/2] w-full items-end overflow-hidden rounded-3xl bg-cream-dark"
-              >
-                {featured.coverImageUrl && (
-                  <Image
-                    src={featured.coverImageUrl}
-                    alt={featured.title}
-                    fill
-                    className="object-cover transition duration-300 group-hover:scale-[1.02]"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-                <p className="relative p-8 text-2xl font-bold text-white sm:text-[28px]">
-                  {featured.title}
-                </p>
-              </Link>
-
-              <div className="flex flex-col">
-                <h2 className="text-2xl font-bold text-[#111111]">{featured.title.toUpperCase()}</h2>
-                <div className="mt-5 space-y-1.5">
-                  <p className="text-lg font-medium text-[#111111]">{featured.excerpt}</p>
-                  <p className="line-clamp-[10] text-xs leading-relaxed text-[#888888]">
-                    {htmlToParagraphs(featured.body).join("  ")}
-                  </p>
-                </div>
-                <div className="mt-6 flex flex-wrap items-center gap-6">
-                  <Link
-                    href={`/contact?inquiry=ORDER_BOOK&book=${encodeURIComponent(featured.title)}`}
-                    className="inline-flex items-center gap-1.5 text-[13px] font-bold tracking-wide text-[#111111]"
-                  >
-                    ORDER BOOK <ChevronRight size={12} />
-                  </Link>
-                  {featured.pdfUrl ? (
-                    <a
-                      href={`/api/resources/${featured.id}/download`}
-                      className="rounded-full bg-brand-500 px-6 py-3.5 text-[13px] font-bold tracking-wide text-white hover:bg-brand-600"
-                    >
-                      Download E-book
-                    </a>
-                  ) : (
-                    <Link
-                      href={`/books/${featured.slug}`}
-                      className="rounded-full bg-brand-500 px-6 py-3.5 text-[13px] font-bold tracking-wide text-white hover:bg-brand-600"
-                    >
-                      View Book
-                    </Link>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section className="bg-cream px-5 py-16 sm:px-8">
-        <div className="mx-auto max-w-[1200px]">
-          <div className="mb-8 flex items-center justify-between">
-            <span className="text-lg font-bold text-[#111111]">*</span>
-            <div className="flex gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink-soft shadow-sm">
-                <ChevronLeft size={16} />
-              </span>
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink-soft shadow-sm">
-                <ChevronRight size={16} />
-              </span>
-            </div>
-          </div>
-
-          {books.length === 0 ? (
-            <p className="text-sm text-ink-soft/60">
-              {q ? `No books match "${q}".` : "No books found."}
-            </p>
-          ) : (
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {books.map((b) => (
-                <ResourceCard
-                  key={b.id}
-                  href={`/books/${b.slug}`}
-                  title={b.title}
-                  excerpt={b.excerpt}
-                  category={b.category}
-                  coverImageUrl={b.coverImageUrl}
-                  date={formatDate(b.createdAt)}
-                />
-              ))}
-            </div>
-          )}
-
-          <Pagination
-            basePath="/books"
-            currentPage={page}
-            totalPages={totalPages}
-            extraQuery={{ q, sort: params.sort }}
+        <div
+          aria-hidden="true"
+          className="book-scene fan in relative grid h-[400px] flex-[0_1_440px] place-items-center max-sm:scale-[0.8]"
+          style={{ animationDelay: ".15s" }}
+        >
+          <div
+            className="absolute inset-5 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(231,217,168,.7), rgba(231,217,168,0) 65%)" }}
           />
+          <div className="p3d absolute" style={{ transform: "rotateX(8deg)" }}>
+            <Book3D
+              src="/images/covers/issue-1-a-perfect-and-excellent-life.jpg"
+              alt=""
+              width={180}
+              height={262}
+              depth={24}
+              spine="#0B1B33"
+              className="b1"
+              style={{ position: "absolute", left: -90, top: -131, transform: "translateX(-90px) rotateZ(-7deg) rotateY(-24deg)" }}
+              priority
+            />
+            <Book3D
+              src="/images/covers/issue-3-the-cross-of-jesus-christ.jpg"
+              alt=""
+              width={180}
+              height={262}
+              depth={24}
+              spine="#3A1F0E"
+              className="b3"
+              style={{ position: "absolute", left: -90, top: -131, transform: "translateX(90px) rotateZ(7deg) rotateY(24deg)" }}
+              priority
+            />
+            <Book3D
+              src="/images/covers/issue-2-the-great-transition.jpg"
+              alt=""
+              width={200}
+              height={290}
+              depth={28}
+              spine="#16261B"
+              style={{ position: "absolute", left: -100, top: -145, transform: "translateZ(60px) rotateY(-14deg)" }}
+              priority
+            />
+          </div>
         </div>
+      </section>
+
+      {/* CONTROLS */}
+      <div className="mx-auto max-w-[1312px] px-5 sm:px-[clamp(20px,4vw,48px)]">
+        <LiveSearchBar
+          basePath="/books"
+          initialQuery={q}
+          initialSort={params.sort ?? "newest"}
+          variant="pill"
+          countLabel={countLabel}
+        />
+      </div>
+
+      {/* GRID */}
+      <section
+        id="grid"
+        aria-label="All books"
+        className="mx-auto max-w-[1312px] px-5 pt-10 pb-[clamp(110px,12vw,160px)] sm:px-[clamp(20px,4vw,48px)]"
+      >
+        {books.length === 0 ? (
+          <div className="flex flex-col items-center gap-2.5 rounded-[28px] border-[1.5px] border-dashed border-[#CDD3C8] px-6 py-20 text-center">
+            <p className="m-0 font-quote text-[36px]">
+              {q ? "No books match your search." : "No books published yet."}
+            </p>
+            {q && <p className="m-0 text-[16px] text-[#56615A]">Try a different word, like “transition” or “cross”.</p>}
+          </div>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(340px,100%),1fr))] gap-6">
+            {books.map((b, i) => {
+              const issue = issueNumberOf(b);
+              const theme = CARD_THEMES[((issue ?? i + 1) - 1) % CARD_THEMES.length];
+              const cover = coverFor(b);
+              const issueLabel = issue ? `Issue ${String(issue).padStart(3, "0")}` : null;
+              return (
+                <Link key={b.id} href={`/books/${b.slug}`} className="tilt rv flex flex-col gap-[18px] text-[#0F1A14]">
+                  <div
+                    className="book-scene relative grid h-[420px] place-items-center overflow-hidden rounded-[28px]"
+                    style={{ background: theme.bg }}
+                  >
+                    {(b.pdfUrl || issueLabel) && (
+                      <span className="glass absolute top-4 left-4 rounded-full px-3 py-1.5 text-[12px] font-semibold tracking-[0.08em] text-[#0F1A14] uppercase">
+                        {[b.pdfUrl ? "Free copy" : null, issueLabel].filter(Boolean).join(" · ")}
+                      </span>
+                    )}
+                    {cover && (
+                      <Book3D src={cover} alt={`Cover of ${b.title}`} width={200} height={290} depth={28} spine={theme.spine} />
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2.5 px-1.5">
+                    <span className="inline-flex items-center gap-2 self-start rounded-full border border-[#DDE2D8] bg-white px-3 py-1.5 text-[13px] font-medium text-[#36423B]">
+                      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full" style={{ background: theme.dot }} />
+                      {b.category}
+                    </span>
+                    <h2 className="m-0 text-[24px] font-semibold tracking-[-0.025em]">{b.title}</h2>
+                    <p className="m-0 line-clamp-3 text-[16px] leading-[1.6] text-[#4A564E]">{b.excerpt}</p>
+                    <p className="m-0 flex items-center justify-between text-[14px] text-[#56615A]">
+                      {formatDate(b.createdAt)} · {readMinutes(b.body)} min read
+                      <span className="inline-flex items-center gap-1.5 font-medium text-[#1E7A43]">
+                        Read <ArrowUpRight size={12} />
+                      </span>
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        <Pagination basePath="/books" currentPage={page} totalPages={totalPages} extraQuery={{ q, sort: params.sort }} />
       </section>
 
       <Footer />

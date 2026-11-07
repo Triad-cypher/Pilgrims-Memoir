@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { Book3D } from "./Book3D";
 
 interface HeroBook {
   src: string;
@@ -38,17 +38,16 @@ function Book({
   spinClass: string;
 }) {
   return (
-    <div
-      className={`book ${spinClass}`}
-      style={{ "--w": `${width}px`, "--h": `${height}px`, "--d": `${depth}px`, "--sp": book.spine } as React.CSSProperties}
-    >
-      <div className="bk-f">
-        <Image src={book.src} alt={book.alt} fill sizes={`${width}px`} priority className="object-cover" />
-      </div>
-      <div className="bk-s" />
-      <div className="bk-p" />
-      <div className="bk-b" />
-    </div>
+    <Book3D
+      src={book.src}
+      alt={book.alt}
+      width={width}
+      height={height}
+      depth={depth}
+      spine={book.spine}
+      className={spinClass}
+      priority
+    />
   );
 }
 

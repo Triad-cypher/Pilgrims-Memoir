@@ -49,10 +49,17 @@ function GlassHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/contact"
-              className="hero-btn hidden min-h-11 items-center gap-2.5 rounded-full bg-[#1E7A43] py-1.5 pr-1.5 pl-[18px] text-[14px] font-medium text-white sm:flex"
+              aria-current={pathname === "/contact" ? "page" : undefined}
+              className={`hero-btn hidden min-h-11 items-center gap-2.5 rounded-full py-1.5 pr-1.5 pl-[18px] text-[14px] font-medium text-white sm:flex ${
+                pathname === "/contact" ? "bg-[#0F1A14]" : "bg-[#1E7A43]"
+              }`}
             >
               Contact
-              <span className="arr grid h-8 w-8 place-items-center rounded-full bg-white text-[#1E7A43]">
+              <span
+                className={`arr grid h-8 w-8 place-items-center rounded-full bg-white ${
+                  pathname === "/contact" ? "text-[#0F1A14]" : "text-[#1E7A43]"
+                }`}
+              >
                 <ArrowUpRight size={14} />
               </span>
             </Link>

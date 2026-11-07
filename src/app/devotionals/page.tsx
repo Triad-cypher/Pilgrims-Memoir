@@ -51,7 +51,7 @@ export default async function DevotionalsPage({
   const bodyPoints = latest ? htmlToParagraphs(latest.body) : [];
 
   return (
-    <div>
+    <div className="reveal-sections">
       <Header />
 
       <section className="px-5 pt-20 pb-8 sm:px-8">
