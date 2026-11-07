@@ -281,11 +281,20 @@ body {
   }
 }
 
-/* Devotionals header art: tilted at rest, swings toward the viewer on hover (like the Books fan). */
-.scroll-tilt .scroll-art {
-  transform: rotateY(-18deg) rotateX(6deg) rotateZ(-3deg);
+/* Devotionals header art: the paper and the rolled scroll + ink drift in opposite directions on hover. */
+.dev-art .dev-layer-paper,
+.dev-art .dev-layer-ink {
   transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.scroll-tilt:hover .scroll-art {
-  transform: rotateY(12deg) rotateX(-3deg) rotateZ(2deg) translateY(-12px) scale(1.04);
+.dev-art .dev-layer-paper {
+  transform-origin: 40% 50%;
+}
+.dev-art .dev-layer-ink {
+  transform-origin: 50% 80%;
+}
+.dev-art:hover .dev-layer-paper {
+  transform: translate(-10px, -14px) rotate(-3deg);
+}
+.dev-art:hover .dev-layer-ink {
+  transform: translate(12px, 8px) rotate(2.5deg);
 }

@@ -78,21 +78,30 @@ export default async function DevotionalsPage({
 
         <div
           aria-hidden="true"
-          className="book-scene scroll-tilt in relative grid h-[400px] flex-[0_1_440px] place-items-center max-sm:h-[340px]"
+          className="dev-art in relative grid h-[400px] flex-[0_1_440px] place-items-center max-sm:h-[340px]"
           style={{ animationDelay: ".15s" }}
         >
           <div
             className="absolute inset-5 rounded-full"
             style={{ background: "radial-gradient(circle, rgba(231,217,168,.7), rgba(231,217,168,0) 65%)" }}
           />
-          <div className="scroll-art relative h-[380px] w-[380px] max-sm:h-[320px] max-sm:w-[320px]">
+          {/* Two aligned layers (same canvas) so they can drift apart on hover. */}
+          <div className="relative aspect-[175/215] h-[380px] max-sm:h-[320px]">
             <Image
-              src="/images/devotionals-scroll.png"
+              src="/images/devotional-paper.png"
               alt=""
               fill
               priority
-              sizes="380px"
-              className="object-contain drop-shadow-[0_24px_30px_rgba(40,30,10,0.28)]"
+              sizes="320px"
+              className="dev-layer-paper object-contain drop-shadow-[0_20px_26px_rgba(40,30,10,0.22)]"
+            />
+            <Image
+              src="/images/devotional-scroll-ink.png"
+              alt=""
+              fill
+              priority
+              sizes="320px"
+              className="dev-layer-ink object-contain drop-shadow-[0_18px_22px_rgba(40,30,10,0.3)]"
             />
           </div>
         </div>
