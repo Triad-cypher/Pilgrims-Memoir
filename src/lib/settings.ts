@@ -8,7 +8,6 @@ export const DEFAULT_SETTINGS = {
   heroImageUrl: "/images/figma/hero-bg.png",
   bannerImageUrl: "/images/figma/banner-image.png",
   contactImageUrl: "/images/figma/contact-image.png",
-  devotionalsImageUrl: "/images/figma/devotional-january.png",
   authorImageUrl: "/images/figma/author-headshot.png",
   aboutTag: "AUTHOR",
   aboutTitle: "About The Author",

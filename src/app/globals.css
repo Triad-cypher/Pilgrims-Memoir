@@ -280,3 +280,12 @@ body {
     }
   }
 }
+
+/* Devotionals header art: tilted at rest, swings toward the viewer on hover (like the Books fan). */
+.scroll-tilt .scroll-art {
+  transform: rotateY(-18deg) rotateX(6deg) rotateZ(-3deg);
+  transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.scroll-tilt:hover .scroll-art {
+  transform: rotateY(12deg) rotateX(-3deg) rotateZ(2deg) translateY(-12px) scale(1.04);
+}

@@ -7,7 +7,6 @@ import { Pagination } from "@/components/site/Pagination";
 import { LiveSearchBar } from "@/components/site/LiveSearchBar";
 import { prisma } from "@/lib/prisma";
 import { formatDate, formatMonthYear } from "@/lib/format";
-import { getSettings } from "@/lib/settings";
 import { stripHtml, stripMonthPrefix } from "@/lib/text";
 
 export const dynamic = "force-dynamic";
@@ -45,8 +44,7 @@ export default async function DevotionalsPage({
       : {}),
   };
 
-  const [settings, total, devotionals] = await Promise.all([
-    getSettings(),
+  const [total, devotionals] = await Promise.all([
     prisma.resource.count({ where: devotionalWhere }),
     prisma.resource.findMany({ where: devotionalWhere, orderBy, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE }),
   ]);
@@ -79,17 +77,24 @@ export default async function DevotionalsPage({
         </div>
 
         <div
-          className="in relative h-[400px] w-full flex-[0_1_440px] overflow-hidden rounded-[32px] bg-[#E4ECDF]"
+          aria-hidden="true"
+          className="book-scene scroll-tilt in relative grid h-[400px] flex-[0_1_440px] place-items-center max-sm:h-[340px]"
           style={{ animationDelay: ".15s" }}
         >
-          <Image
-            src={settings.devotionalsImageUrl}
-            alt=""
-            fill
-            priority
-            sizes="(min-width: 1024px) 440px, 100vw"
-            className="object-cover"
+          <div
+            className="absolute inset-5 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(231,217,168,.7), rgba(231,217,168,0) 65%)" }}
           />
+          <div className="scroll-art relative h-[380px] w-[380px] max-sm:h-[320px] max-sm:w-[320px]">
+            <Image
+              src="/images/devotionals-scroll.png"
+              alt=""
+              fill
+              priority
+              sizes="380px"
+              className="object-contain drop-shadow-[0_24px_30px_rgba(40,30,10,0.28)]"
+            />
+          </div>
         </div>
       </section>
 

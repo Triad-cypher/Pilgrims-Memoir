@@ -162,14 +162,6 @@ export function SettingsForm({ initial }: { initial: SettingsMap }) {
         </div>
       </Section>
 
-      <Section title="Monthly Devotionals Page">
-        <ImageField
-          label="Devotionals Page Image"
-          value={values.devotionalsImageUrl}
-          onChange={(v) => set("devotionalsImageUrl", v)}
-        />
-      </Section>
-
       <Section title="Contact & Footer">
         <Field label="Contact Heading" value={values.contactHeading} onChange={(v) => set("contactHeading", v)} />
         <Field label="Contact Subheading" value={values.contactSubheading} onChange={(v) => set("contactSubheading", v)} />
